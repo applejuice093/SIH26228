@@ -68,4 +68,5 @@ export const api = {
   capabilities: (): Promise<Capability[]> => (BASE ? http('/capabilities') : delay(mock.capabilities)),
   drift: () => delay(mock.drift),
   contributorRisk: () => delay(mock.contributorRisk),
+  trends: () => delay(mock.trends),
 }

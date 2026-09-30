@@ -147,3 +147,11 @@ export const capabilities: Capability[] = [
   { name: 'Video / temporal models', area: 'Model', status: 'NOT_SUPPORTED', access_modes: [], notes: 'Out of MVP scope' },
   { name: 'Permissioned ledger adapter', area: 'Audit', status: 'NOT_SUPPORTED', access_modes: [], notes: 'Optional, local hash chain used' },
 ]
+
+// 7-day example trends for dashboard sparklines (oldest first).
+export const trends = {
+  assessments: [3, 4, 2, 5, 3, 4, 2],
+  highFindings: [0, 0, 1, 1, 2, 3, 4],
+  incidents: [0, 0, 0, 1, 2, 3, 4],
+  auditEvents: [12, 18, 15, 22, 31, 40, 46],
+}
