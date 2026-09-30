@@ -9,6 +9,9 @@ import Incident from './pages/Incident'
 import Incidents from './pages/Incidents'
 import Provenance from './pages/Provenance'
 import Audit from './pages/Audit'
+import Report from './pages/Report'
+import Capabilities from './pages/Capabilities'
+import AssetDetail from './pages/AssetDetail'
 
 export default function App() {
   return (
@@ -23,6 +26,10 @@ export default function App() {
         <Route path="/incidents/:id" element={<Incident />} />
         <Route path="/provenance" element={<Provenance />} />
         <Route path="/audit" element={<Audit />} />
+        <Route path="/reports/:id" element={<Report />} />
+        <Route path="/settings/capabilities" element={<Capabilities />} />
+        <Route path="/models/:id" element={<AssetDetail kind="MODEL" />} />
+        <Route path="/datasets/:id" element={<AssetDetail kind="DATASET" />} />
         <Route path="*" element={<Placeholder title="Not found" />} />
       </Route>
     </Routes>
