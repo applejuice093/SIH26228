@@ -13,5 +13,5 @@ backend/    Assessment engines and API (planned, see docs/10_BACKEND.md)
 ## Status
 
 - [x] Specification imported
-- [ ] Frontend analyst console (in progress, mock API)
+- [x] Frontend analyst console on mock API (live: https://cvtrust-sih26228.vercel.app)
 - [ ] Backend API and engines
