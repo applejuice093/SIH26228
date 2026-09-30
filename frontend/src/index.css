@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .card { @apply rounded-lg border border-slate-200 bg-white p-4 shadow-sm; }
+  .card-title { @apply mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500; }
+  .btn { @apply rounded-md border px-3 py-1.5 text-sm font-medium transition-colors; }
+  .table-base { @apply w-full text-left text-sm; }
+  .table-base th { @apply border-b border-slate-200 px-3 py-2 text-xs font-semibold uppercase text-slate-500; }
+  .table-base td { @apply border-b border-slate-100 px-3 py-2 align-top; }
+}
