@@ -5,7 +5,7 @@ const nav = [
   { to: '/assets', label: 'Assets' },
   { to: '/assessments', label: 'Assessments' },
   { to: '/findings', label: 'Findings' },
-  { to: '/incidents/INC-001', label: 'Incidents' },
+  { to: '/incidents', label: 'Incidents' },
   { to: '/provenance', label: 'Provenance' },
   { to: '/audit', label: 'Audit Ledger' },
   { to: '/reports/RPT-001', label: 'Reports' },

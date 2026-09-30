@@ -5,6 +5,8 @@ import Dashboard from './pages/Dashboard'
 import Assets from './pages/Assets'
 import Assessments from './pages/Assessments'
 import Findings from './pages/Findings'
+import Incident from './pages/Incident'
+import Incidents from './pages/Incidents'
 
 export default function App() {
   return (
@@ -15,6 +17,8 @@ export default function App() {
         <Route path="/assets" element={<Assets />} />
         <Route path="/assessments" element={<Assessments />} />
         <Route path="/findings" element={<Findings />} />
+        <Route path="/incidents" element={<Incidents />} />
+        <Route path="/incidents/:id" element={<Incident />} />
         <Route path="*" element={<Placeholder title="Not found" />} />
       </Route>
     </Routes>
