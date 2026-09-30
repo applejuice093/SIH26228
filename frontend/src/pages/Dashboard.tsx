@@ -34,8 +34,8 @@ export default function Dashboard() {
           <table className="table-base"><tbody>
             {incidents.data?.map((i) => (
               <tr key={i.incident_id}>
-                <td><Link className="font-mono text-sky-700 hover:underline" to={`/incidents/${i.incident_id}`}>{i.incident_id}</Link></td>
-                <td>{i.title}<div className="text-xs text-slate-500">{fmtDate(i.opened_at)}</div></td>
+                <td><Link className="font-mono text-accent hover:underline" to={`/incidents/${i.incident_id}`}>{i.incident_id}</Link></td>
+                <td>{i.title}<div className="text-xs text-muted">{fmtDate(i.opened_at)}</div></td>
                 <td><SeverityBadge s={i.severity} /></td>
                 <td><StateBadge s={i.state} /></td>
               </tr>
@@ -64,7 +64,7 @@ export default function Dashboard() {
               {contrib.data?.map((c) => (
                 <tr key={c.contributor_id}>
                   <td className="font-mono">{c.contributor_id}</td>
-                  <td>{c.flagged.toLocaleString()} / {c.total.toLocaleString()} <span className="text-xs text-slate-500">({((c.flagged / c.total) * 100).toFixed(1)}%)</span></td>
+                  <td>{c.flagged.toLocaleString()} / {c.total.toLocaleString()} <span className="text-xs text-muted">({((c.flagged / c.total) * 100).toFixed(1)}%)</span></td>
                   <td><SeverityBadge s={c.max_severity} /></td>
                 </tr>
               ))}
@@ -77,7 +77,7 @@ export default function Dashboard() {
           <table className="table-base"><tbody>
             {models.map((m) => (
               <tr key={m.asset_id}>
-                <td><Link className="font-mono text-sky-700 hover:underline" to={`/models/${m.asset_id}`}>{m.asset_id}</Link></td>
+                <td><Link className="font-mono text-accent hover:underline" to={`/models/${m.asset_id}`}>{m.asset_id}</Link></td>
                 <td>{m.name}</td>
                 <td><StateBadge s={m.status} /></td>
               </tr>

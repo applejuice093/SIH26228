@@ -17,7 +17,7 @@ export default function EvidenceGraph({ graph, onEvidence }: { graph: G; onEvide
     return {
       id: n.id,
       position: { x: c * 190, y },
-      data: { label: <div><div className="text-[10px] uppercase text-slate-500">{n.type}</div><div className="font-mono text-xs">{n.id}</div>{n.label && <div className="text-[10px]">{n.label}</div>}</div> },
+      data: { label: <div><div className="text-[10px] uppercase text-muted">{n.type}</div><div className="font-mono text-xs">{n.id}</div>{n.label && <div className="text-[10px]">{n.label}</div>}</div> },
       style: { background: color[n.type] ?? '#fff', border: '1px solid #94a3b8', borderRadius: 6, width: 150, padding: 6 },
     }
   })
@@ -27,7 +27,7 @@ export default function EvidenceGraph({ graph, onEvidence }: { graph: G; onEvide
     style: e.relation === 'FLAGS' ? { stroke: '#dc2626', strokeDasharray: '4 3' } : undefined,
   }))
   return (
-    <div className="h-96 rounded border border-slate-200">
+    <div className="h-96 rounded border border-line">
       <ReactFlow nodes={nodes} edges={edges} fitView proOptions={{ hideAttribution: true }}
         onNodeClick={(_, n) => { if (n.id.startsWith('EV-')) onEvidence?.(n.id) }}>
         <Background /><Controls showInteractive={false} />

@@ -19,7 +19,7 @@ export default function Assets() {
                 const to = link(a.asset_id, a.asset_type)
                 return (
                   <tr key={a.asset_id}>
-                    <td className="font-mono">{to ? <Link className="text-sky-700 hover:underline" to={to}>{a.asset_id}</Link> : a.asset_id}</td>
+                    <td className="font-mono">{to ? <Link className="text-accent hover:underline" to={to}>{a.asset_id}</Link> : a.asset_id}</td>
                     <td>{a.asset_type}</td><td>{a.name}</td>
                     <td className="font-mono text-xs" title={a.sha256}>{shortHash(a.sha256)}</td>
                     <td>{fmtBytes(a.byte_size)}</td>

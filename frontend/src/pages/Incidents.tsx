@@ -13,7 +13,7 @@ export default function Incidents() {
         <table className="table-base"><thead><tr><th>ID</th><th>Title</th><th>Opened</th><th>Findings</th><th>Severity</th><th>State</th></tr></thead><tbody>
           {data?.map((i) => (
             <tr key={i.incident_id}>
-              <td><Link className="font-mono text-sky-700 hover:underline" to={`/incidents/${i.incident_id}`}>{i.incident_id}</Link></td>
+              <td><Link className="font-mono text-accent hover:underline" to={`/incidents/${i.incident_id}`}>{i.incident_id}</Link></td>
               <td>{i.title}</td><td className="whitespace-nowrap">{fmtDate(i.opened_at)}</td><td>{i.finding_ids.length}</td>
               <td><SeverityBadge s={i.severity} /></td><td><StateBadge s={i.state} /></td>
             </tr>

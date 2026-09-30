@@ -25,11 +25,11 @@ export default function Provenance() {
         <label className="block">Inference record path
           <input className="mt-1 w-full rounded border px-2 py-1 font-mono" value={path} onChange={(e) => setPath(e.target.value)} />
         </label>
-        <div className="flex flex-wrap gap-2 text-xs">Samples: {samples.map((s) => <button key={s} className="rounded bg-slate-100 px-1.5 font-mono hover:bg-slate-200" onClick={() => setPath(s)}>{s.split('/').pop()}</button>)}</div>
+        <div className="flex flex-wrap gap-2 text-xs">Samples: {samples.map((s) => <button key={s} className="rounded bg-raised px-1.5 font-mono hover:bg-line" onClick={() => setPath(s)}>{s.split('/').pop()}</button>)}</div>
         <label className="block">Expected key IDs (comma separated)
           <input className="mt-1 w-full rounded border px-2 py-1 font-mono" value={keys} onChange={(e) => setKeys(e.target.value)} />
         </label>
-        <button className="btn border-slate-800 bg-slate-900 text-white" onClick={() => m.mutate()} disabled={m.isPending}>{m.isPending ? 'Verifying…' : 'Verify record'}</button>
+        <button className="btn border-line bg-panel text-white" onClick={() => m.mutate()} disabled={m.isPending}>{m.isPending ? 'Verifying…' : 'Verify record'}</button>
       </div>
       {r && (
         <div className="card mt-4">

@@ -15,10 +15,10 @@ const nav = [
 export default function Layout() {
   return (
     <div className="flex min-h-screen">
-      <aside className="w-56 shrink-0 bg-slate-900 text-slate-200">
-        <div className="border-b border-slate-800 px-4 py-4">
+      <aside className="w-56 shrink-0 bg-panel text-fg-2">
+        <div className="border-b border-line px-4 py-4">
           <div className="text-lg font-bold text-white">CV-TRUST</div>
-          <div className="text-xs text-slate-400">Analyst Console · SIH 26228</div>
+          <div className="text-xs text-muted">Analyst Console · SIH 26228</div>
         </div>
         <nav className="flex flex-col p-2">
           {nav.map((n) => (
@@ -26,14 +26,14 @@ export default function Layout() {
               key={n.to}
               to={n.to}
               className={({ isActive }) =>
-                `rounded px-3 py-2 text-sm ${isActive ? 'bg-slate-700 text-white' : 'hover:bg-slate-800'}`
+                `rounded px-3 py-2 text-sm ${isActive ? 'bg-raised text-white' : 'hover:bg-raised'}`
               }
             >
               {n.label}
             </NavLink>
           ))}
         </nav>
-        <div className="mt-6 px-4 text-xs text-slate-500">Offline mode · mock API</div>
+        <div className="mt-6 px-4 text-xs text-muted">Offline mode · mock API</div>
       </aside>
       <main className="flex-1 overflow-x-auto p-6">
         <Outlet />

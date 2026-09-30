@@ -8,13 +8,13 @@ export default function EvidenceDrawer({ id, onClose, onOpen }: { id: string | n
   if (!id) return null
   const ev = data?.find((e) => e.evidence_id === id)
   return (
-    <div className="fixed inset-0 z-40 flex justify-end bg-slate-900/30" onClick={onClose}>
-      <div className="h-full w-full max-w-lg overflow-y-auto bg-white p-5 shadow-xl" onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Evidence detail">
+    <div className="fixed inset-0 z-40 flex justify-end bg-black/60" onClick={onClose}>
+      <div className="h-full w-full max-w-lg overflow-y-auto bg-panel p-5 shadow-xl" onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Evidence detail">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="font-mono text-lg font-semibold">{id}</h2>
-          <button className="btn border-slate-300" onClick={onClose}>Close</button>
+          <button className="btn border-line" onClick={onClose}>Close</button>
         </div>
-        {!ev ? <div className="text-sm text-slate-500">Evidence not found.</div> : (
+        {!ev ? <div className="text-sm text-muted">Evidence not found.</div> : (
           <div className="space-y-4">
             <div className="flex gap-2"><SeverityBadge s={ev.severity} /><StateBadge s={ev.access_mode} /></div>
             <p className="text-sm">{ev.observation}</p>
@@ -41,12 +41,12 @@ export default function EvidenceDrawer({ id, onClose, onOpen }: { id: string | n
             </div>
             <div>
               <div className="card-title">Limitations</div>
-              {ev.limitations.length ? <ul className="list-disc pl-5 text-sm">{ev.limitations.map((l) => <li key={l}>{l}</li>)}</ul> : <div className="text-sm text-slate-500">None declared.</div>}
+              {ev.limitations.length ? <ul className="list-disc pl-5 text-sm">{ev.limitations.map((l) => <li key={l}>{l}</li>)}</ul> : <div className="text-sm text-muted">None declared.</div>}
             </div>
             {!!ev.related_evidence_ids?.length && (
               <div>
                 <div className="card-title">Related evidence</div>
-                <div className="flex flex-wrap gap-2">{ev.related_evidence_ids.map((r) => <button key={r} className="btn border-slate-300 font-mono" onClick={() => onOpen(r)}>{r}</button>)}</div>
+                <div className="flex flex-wrap gap-2">{ev.related_evidence_ids.map((r) => <button key={r} className="btn border-line font-mono" onClick={() => onOpen(r)}>{r}</button>)}</div>
               </div>
             )}
           </div>

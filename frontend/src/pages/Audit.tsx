@@ -10,7 +10,7 @@ export default function Audit() {
   return (
     <div>
       <PageHeader title="Audit ledger" sub="Append-only, hash-chained and signed. Verification recomputes the chain from the first event."
-        right={<button className="btn border-slate-800 bg-slate-900 text-white" onClick={() => verify.refetch()}>{verify.isFetching ? 'Verifying…' : 'Verify chain'}</button>} />
+        right={<button className="btn border-line bg-panel text-white" onClick={() => verify.refetch()}>{verify.isFetching ? 'Verifying…' : 'Verify chain'}</button>} />
       {v && (
         <div className="card mb-4 flex flex-wrap gap-4 text-sm">
           <span>Chain <StateBadge s={v.chain_valid ? 'VALID' : 'TAMPERED'} /></span>

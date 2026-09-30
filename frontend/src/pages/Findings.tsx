@@ -36,15 +36,15 @@ export default function Findings() {
         ))}
       </div>
       <div className="card overflow-x-auto">
-        {isLoading ? <Loading /> : !data?.length ? <div className="text-sm text-slate-500">No findings match these filters.</div> : (
+        {isLoading ? <Loading /> : !data?.length ? <div className="text-sm text-muted">No findings match these filters.</div> : (
           <table className="table-base">
             <thead><tr><th>ID</th><th>Summary and reason</th><th>Evidence</th><th>Affected</th><th>Severity</th><th>Confidence</th><th>Recommended</th><th>Status</th></tr></thead>
             <tbody>
               {data.map((f) => (
                 <tr key={f.finding_id}>
-                  <td className="font-mono">{f.finding_id}<div><Link className="text-xs text-sky-700 hover:underline" to={`/incidents/${f.incident_id}`}>{f.incident_id}</Link></div></td>
-                  <td><div className="font-medium">{f.summary}</div><div className="text-xs text-slate-500">{f.reason}</div></td>
-                  <td>{f.evidence_ids.map((e) => <button key={e} onClick={() => setEv(e)} className="mb-1 mr-1 rounded bg-slate-100 px-1.5 font-mono text-xs text-sky-800 hover:bg-slate-200">{e}</button>)}</td>
+                  <td className="font-mono">{f.finding_id}<div><Link className="text-xs text-accent hover:underline" to={`/incidents/${f.incident_id}`}>{f.incident_id}</Link></div></td>
+                  <td><div className="font-medium">{f.summary}</div><div className="text-xs text-muted">{f.reason}</div></td>
+                  <td>{f.evidence_ids.map((e) => <button key={e} onClick={() => setEv(e)} className="mb-1 mr-1 rounded bg-raised px-1.5 font-mono text-xs text-accent hover:bg-line">{e}</button>)}</td>
                   <td className="font-mono text-xs">{f.affected_asset_ids.join(', ')}</td>
                   <td><SeverityBadge s={f.severity} /></td>
                   <td>{pct(f.confidence)}</td>

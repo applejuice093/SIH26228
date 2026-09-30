@@ -17,14 +17,14 @@ export default function Report() {
   const fs = findings.data?.filter((f) => i.finding_ids.includes(f.finding_id)) ?? []
   const evs = evidence.data?.filter((e) => i.evidence_ids.includes(e.evidence_id)) ?? []
   return (
-    <article className="mx-auto max-w-4xl space-y-5 bg-white p-8 shadow-sm print:shadow-none">
+    <article className="mx-auto max-w-4xl space-y-5 bg-panel p-8 shadow-sm print:shadow-none">
       <header className="border-b pb-4">
-        <div className="text-xs uppercase tracking-wide text-slate-500">CV-TRUST incident assurance report</div>
+        <div className="text-xs uppercase tracking-wide text-muted">CV-TRUST incident assurance report</div>
         <h1 className="mt-1 text-2xl font-semibold">{i.title}</h1>
         <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
           <span className="font-mono">{i.incident_id}</span><SeverityBadge s={i.severity} /><StateBadge s={i.state} />
-          <span className="text-slate-500">Opened {fmtDate(i.opened_at)}</span>
-          <button className="btn ml-auto border-slate-300 print:hidden" onClick={() => window.print()}>Print / save PDF</button>
+          <span className="text-muted">Opened {fmtDate(i.opened_at)}</span>
+          <button className="btn ml-auto border-line print:hidden" onClick={() => window.print()}>Print / save PDF</button>
         </div>
       </header>
       <section><h2 className="card-title">1. Summary</h2><p className="text-sm">{i.summary}</p></section>
@@ -44,11 +44,11 @@ export default function Report() {
         <h2 className="card-title">4. Probable technical objective</h2>
         {obj.data?.length ? obj.data.map((o) => (
           <div key={o.hypothesis_id} className="mb-2 text-sm"><b>{o.type}</b> (support {pct(o.support_score)}): {o.statement} Alternatives: {o.alternatives.map((a) => a.type).join(', ')}. Intent attribution: {o.intent_attribution}.</div>
-        )) : <p className="text-sm text-slate-500">Not assessed.</p>}
+        )) : <p className="text-sm text-muted">Not assessed.</p>}
       </section>
       <section>
         <h2 className="card-title">5. Blast radius</h2>
-        {i.blast_radius.length ? <ul className="list-disc pl-5 text-sm">{i.blast_radius.map((b) => <li key={b.asset_id}><span className="font-mono">{b.asset_id}</span>: {b.relation} ({b.risk})</li>)}</ul> : <p className="text-sm text-slate-500">None identified.</p>}
+        {i.blast_radius.length ? <ul className="list-disc pl-5 text-sm">{i.blast_radius.map((b) => <li key={b.asset_id}><span className="font-mono">{b.asset_id}</span>: {b.relation} ({b.risk})</li>)}</ul> : <p className="text-sm text-muted">None identified.</p>}
       </section>
       <section>
         <h2 className="card-title">6. Coverage and limitations</h2>

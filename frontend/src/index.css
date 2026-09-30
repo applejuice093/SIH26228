@@ -1,12 +1,48 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/jetbrains-mono';
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Inter Variable', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+
+  --color-base: #0b0e13;
+  --color-panel: #12161d;
+  --color-raised: #1a2029;
+  --color-line: #252c37;
+  --color-line-strong: #333c4a;
+  --color-fg: #e6e9ef;
+  --color-fg-2: #b4bccb;
+  --color-muted: #7c8698;
+  --color-accent: #4fd1c5;
+
+  --color-sev-info: #8b95a7;
+  --color-sev-low: #38bdf8;
+  --color-sev-medium: #f5b83d;
+  --color-sev-high: #fb8b3c;
+  --color-sev-critical: #f5484b;
+  --color-ok: #3ecf8e;
+}
+
+@layer base {
+  html { color-scheme: dark; }
+  body { @apply bg-base text-fg font-sans antialiased; font-feature-settings: 'cv11', 'ss01'; font-size: 13px; }
+  ::selection { background: color-mix(in oklab, var(--color-accent) 35%, transparent); }
+  * { scrollbar-color: var(--color-line-strong) transparent; }
+}
+
+@utility tabular { font-variant-numeric: tabular-nums; }
+@utility id { @apply font-mono whitespace-nowrap text-[12px]; }
 
 @layer components {
-  .card { @apply rounded-lg border border-slate-200 bg-white p-4 shadow-sm; }
-  .card-title { @apply mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500; }
-  .btn { @apply rounded-md border px-3 py-1.5 text-sm font-medium transition-colors; }
-  .table-base { @apply w-full text-left text-sm; }
-  .table-base th { @apply border-b border-slate-200 px-3 py-2 text-xs font-semibold uppercase text-slate-500; }
-  .table-base td { @apply border-b border-slate-100 px-3 py-2 align-top; }
+  .card { @apply rounded-lg border border-line bg-panel p-4; }
+  .card-title { @apply mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted; }
+  .btn { @apply inline-flex items-center gap-1.5 rounded-md border border-line bg-raised px-3 py-1.5 text-[12.5px] font-medium text-fg-2 transition-colors hover:border-line-strong hover:text-fg disabled:opacity-50; }
+  .btn-primary { @apply border-accent/60 bg-accent/10 text-accent hover:bg-accent/20; }
+  .input { @apply rounded-md border border-line bg-base px-2.5 py-1.5 text-[12.5px] text-fg outline-none focus:border-accent/70; }
+  .table-base { @apply w-full text-left text-[12.5px] tabular; }
+  .table-base th { @apply border-b border-line px-3 py-2 text-[10.5px] font-semibold uppercase tracking-[0.08em] text-muted whitespace-nowrap; }
+  .table-base td { @apply border-b border-line/60 px-3 py-2 align-top text-fg-2; }
+  .table-base tbody tr { @apply transition-colors hover:bg-raised/60; }
+  .chip { @apply rounded border border-line bg-raised px-1.5 py-0.5 font-mono text-[11px] whitespace-nowrap text-accent hover:border-accent/50; }
 }

@@ -21,8 +21,8 @@ export default function Assessments() {
                   <td><StateBadge s={a.access_mode} /></td>
                   <td className="whitespace-nowrap">{fmtDate(a.started_at)}</td>
                   <td className="w-40">
-                    <div className="h-2 rounded bg-slate-100"><div className="h-2 rounded bg-sky-500" style={{ width: `${a.progress * 100}%` }} /></div>
-                    <div className="mt-1 text-xs text-slate-500">{Math.round(a.progress * 100)}%</div>
+                    <div className="h-2 rounded bg-raised"><div className="h-2 rounded bg-accent" style={{ width: `${a.progress * 100}%` }} /></div>
+                    <div className="mt-1 text-xs text-muted">{Math.round(a.progress * 100)}%</div>
                   </td>
                   <td><StateBadge s={a.status} /></td>
                   <td className="font-mono text-xs">{a.finding_ids.join(', ') || '–'}</td>

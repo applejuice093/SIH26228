@@ -32,16 +32,16 @@ export default function AssetDetail({ kind }: { kind: 'MODEL' | 'DATASET' }) {
         </section>
         <section className="card">
           <div className="card-title">Assessments</div>
-          {asms.length ? <table className="table-base"><tbody>{asms.map((s) => <tr key={s.assessment_id}><td className="font-mono">{s.assessment_id}</td><td>{s.assessment_type}</td><td><StateBadge s={s.access_mode} /></td><td><StateBadge s={s.status} /></td></tr>)}</tbody></table> : <div className="text-sm text-slate-500">Not yet assessed.</div>}
+          {asms.length ? <table className="table-base"><tbody>{asms.map((s) => <tr key={s.assessment_id}><td className="font-mono">{s.assessment_id}</td><td>{s.assessment_type}</td><td><StateBadge s={s.access_mode} /></td><td><StateBadge s={s.status} /></td></tr>)}</tbody></table> : <div className="text-sm text-muted">Not yet assessed.</div>}
         </section>
       </div>
       <section className="card">
         <div className="card-title">Findings</div>
-        {findings.data?.length ? <table className="table-base"><tbody>{findings.data.map((f) => <tr key={f.finding_id}><td className="font-mono">{f.finding_id}</td><td>{f.summary}</td><td><SeverityBadge s={f.severity} /></td><td><Link className="text-sky-700 hover:underline" to={`/incidents/${f.incident_id}`}>{f.incident_id}</Link></td></tr>)}</tbody></table> : <div className="text-sm text-slate-500">No findings.</div>}
+        {findings.data?.length ? <table className="table-base"><tbody>{findings.data.map((f) => <tr key={f.finding_id}><td className="font-mono">{f.finding_id}</td><td>{f.summary}</td><td><SeverityBadge s={f.severity} /></td><td><Link className="text-accent hover:underline" to={`/incidents/${f.incident_id}`}>{f.incident_id}</Link></td></tr>)}</tbody></table> : <div className="text-sm text-muted">No findings.</div>}
       </section>
       <section className="card">
         <div className="card-title">Evidence</div>
-        {evs.length ? <table className="table-base"><tbody>{evs.map((e) => <tr key={e.evidence_id}><td><button className="font-mono text-sky-700 hover:underline" onClick={() => setEv(e.evidence_id)}>{e.evidence_id}</button></td><td className="font-mono text-xs">{e.detector}</td><td>{e.observation}</td><td>{pct(e.confidence)}</td></tr>)}</tbody></table> : <div className="text-sm text-slate-500">No evidence recorded.</div>}
+        {evs.length ? <table className="table-base"><tbody>{evs.map((e) => <tr key={e.evidence_id}><td><button className="font-mono text-accent hover:underline" onClick={() => setEv(e.evidence_id)}>{e.evidence_id}</button></td><td className="font-mono text-xs">{e.detector}</td><td>{e.observation}</td><td>{pct(e.confidence)}</td></tr>)}</tbody></table> : <div className="text-sm text-muted">No evidence recorded.</div>}
       </section>
       <EvidenceDrawer id={ev} onClose={() => setEv(null)} onOpen={setEv} />
     </div>
