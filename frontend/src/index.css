@@ -29,6 +29,10 @@
   body { @apply bg-base text-fg font-sans antialiased; font-feature-settings: 'cv11', 'ss01'; font-size: 13px; }
   ::selection { background: color-mix(in oklab, var(--color-accent) 35%, transparent); }
   * { scrollbar-color: var(--color-line-strong) transparent; }
+  html { scroll-behavior: smooth; }
+  h1, h2, h3 { text-wrap: balance; }
+  p { text-wrap: pretty; }
+  :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; border-radius: 4px; }
 }
 
 @utility tabular { font-variant-numeric: tabular-nums; }
@@ -37,7 +41,7 @@
 @layer components {
   .card { @apply rounded-lg border border-line bg-panel p-4; }
   .card-title { @apply mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted; }
-  .btn { @apply inline-flex items-center gap-1.5 rounded-md border border-line bg-raised px-3 py-1.5 text-[12.5px] font-medium text-fg-2 transition-colors hover:border-line-strong hover:text-fg disabled:opacity-50; }
+  .btn { @apply inline-flex items-center gap-1.5 rounded-md border border-line bg-raised px-3 py-1.5 text-[12.5px] font-medium text-fg-2 transition-[color,background-color,border-color,transform] duration-200 hover:border-line-strong hover:text-fg active:translate-y-px active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100; }
   .btn-primary { @apply border-accent/60 bg-accent/10 text-accent hover:bg-accent/20; }
   .input { @apply rounded-md border border-line bg-base px-2.5 py-1.5 text-[12.5px] text-fg outline-none focus:border-accent/70; }
   .table-base { @apply w-full text-left text-[12.5px] tabular; }
@@ -49,4 +53,4 @@
 
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 .fade-in { animation: fade-in 0.35s ease-out both; }
-@media (prefers-reduced-motion: reduce) { .fade-in { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .fade-in { animation: none; } html { scroll-behavior: auto; } }

@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
-import Placeholder from './pages/Placeholder'
+import NotFound from './pages/NotFound'
 import Dashboard from './pages/Dashboard'
 import Story from './pages/Story'
 import Assets from './pages/Assets'
@@ -32,7 +32,7 @@ export default function App() {
         <Route path="/settings/capabilities" element={<Capabilities />} />
         <Route path="/models/:id" element={<AssetDetail kind="MODEL" />} />
         <Route path="/datasets/:id" element={<AssetDetail kind="DATASET" />} />
-        <Route path="*" element={<Placeholder title="Not found" />} />
+        <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
   )
