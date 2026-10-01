@@ -12,8 +12,8 @@
   --color-line: #252c37;
   --color-line-strong: #333c4a;
   --color-fg: #e6e9ef;
-  --color-fg-2: #b4bccb;
-  --color-muted: #7c8698;
+  --color-fg-2: #cbd2de;
+  --color-muted: #9aa4b5;
   --color-accent: #4fd1c5;
 
   --color-sev-info: #8b95a7;
@@ -46,3 +46,7 @@
   .table-base tbody tr { @apply transition-colors hover:bg-raised/60; }
   .chip { @apply rounded border border-line bg-raised px-1.5 py-0.5 font-mono text-[11px] whitespace-nowrap text-accent hover:border-accent/50; }
 }
+
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.fade-in { animation: fade-in 0.35s ease-out both; }
+@media (prefers-reduced-motion: reduce) { .fade-in { animation: none; } }

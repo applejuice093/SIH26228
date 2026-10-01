@@ -1,7 +1,8 @@
 import { AnimatePresence, motion } from 'motion/react'
+import { useEffect, useState } from 'react'
 import {
   Activity, Boxes, ClipboardCheck, FileText, Fingerprint, LayoutDashboard, ListChecks, Network, PlayCircle,
-  ScrollText, ShieldCheck, SlidersHorizontal,
+  Menu, ScrollText, ShieldCheck, SlidersHorizontal, X,
 } from 'lucide-react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 
@@ -28,9 +29,19 @@ const groups = [
 
 export default function Layout() {
   const loc = useLocation()
+  const [open, setOpen] = useState(false)
+  useEffect(() => setOpen(false), [loc.pathname])
   return (
     <div className="flex min-h-screen">
-      <aside className="sticky top-0 flex h-screen w-60 shrink-0 flex-col border-r border-line bg-panel">
+      <div className="fixed inset-x-0 top-0 z-30 flex h-12 items-center gap-3 border-b border-line bg-panel/95 px-3 backdrop-blur lg:hidden">
+        <button className="btn px-2" aria-label="Open navigation" onClick={() => setOpen(true)}><Menu size={16} /></button>
+        <ShieldCheck className="h-4 w-4 text-accent" /><span className="text-[14px] font-semibold tracking-tight">CV-TRUST</span>
+      </div>
+      <AnimatePresence>
+        {open && <motion.div className="fixed inset-0 z-40 bg-black/60 lg:hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setOpen(false)} />}
+      </AnimatePresence>
+      <aside className={`fixed inset-y-0 left-0 z-50 flex h-screen w-64 shrink-0 flex-col border-r border-line bg-panel transition-transform duration-200 lg:sticky lg:top-0 lg:w-60 lg:translate-x-0 ${open ? 'translate-x-0' : '-translate-x-full'}`}>
+        <button className="absolute right-2 top-3 rounded p-1.5 text-muted hover:text-fg lg:hidden" aria-label="Close navigation" onClick={() => setOpen(false)}><X size={16} /></button>
         <div className="flex items-center gap-2.5 border-b border-line px-4 py-4">
           <div className="grid h-8 w-8 place-items-center rounded-md bg-accent/10 ring-1 ring-accent/40"><ShieldCheck className="h-4.5 w-4.5 text-accent" /></div>
           <div>
@@ -62,7 +73,7 @@ export default function Layout() {
           <div className="mt-1 flex items-center gap-2"><ClipboardCheck className="h-3 w-3" />Demo build · example data</div>
         </div>
       </aside>
-      <main className="min-w-0 flex-1 px-7 py-6">
+      <main className="min-w-0 flex-1 px-3 pb-6 pt-16 sm:px-5 lg:px-7 lg:pt-6">
         <AnimatePresence mode="wait">
           <motion.div key={loc.pathname} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
             <Outlet />
