@@ -87,15 +87,15 @@ export default function Dashboard() {
         {engines.map(({ name, icon: Icon, n, note }) => (
           <motion.div key={name} variants={rise} className="flex items-center gap-3 rounded-lg border border-line bg-panel/60 px-3 py-2.5">
             <Icon className="h-4 w-4 text-accent" strokeWidth={1.75} />
-            <div className="min-w-0 flex-1"><div className="text-[12.5px] font-medium text-fg">{name}</div><div className="truncate text-[11px] text-muted">{note}</div></div>
+            <div className="min-w-0 flex-1"><div className="text-[12.5px] font-medium text-fg">{name}</div><div className="text-[11px] leading-snug text-muted">{note}</div></div>
             <div className={`tabular text-[13px] font-semibold ${n ? 'text-sev-high' : 'text-muted'}`}>{n} <span className="text-[10.5px] font-normal text-muted">flags</span></div>
           </motion.div>
         ))}
       </motion.div>
 
       <motion.div variants={stagger} initial="hidden" animate="show" className="mt-4 grid gap-4 xl:grid-cols-3">
-        <Panel title="How INC-001 propagated" className="xl:col-span-2" right={<Link to="/incidents/INC-001" className="text-[12px] text-accent hover:underline">Open graph</Link>}>
-          {graph.data && <EvidenceGraph graph={graph.data} height={290} compact />}
+        <Panel title="How INC-001 propagated" className="xl:col-span-3" right={<Link to="/incidents/INC-001" className="text-[12px] text-accent hover:underline">Open graph</Link>}>
+          {graph.data && <EvidenceGraph graph={graph.data} height={300} compact />}
         </Panel>
         <Panel title="Findings by severity">
           <div className="space-y-3 pt-1">
@@ -115,7 +115,7 @@ export default function Dashboard() {
                 <li key={i.incident_id}>
                   <Link to={`/incidents/${i.incident_id}`} className="flex items-center gap-2 rounded px-1 py-0.5 hover:bg-raised">
                     <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: severityVar[i.severity] }} />
-                    <Id>{i.incident_id}</Id><span className="truncate text-[12.5px] text-fg-2">{i.title}</span>
+                    <Id>{i.incident_id}</Id><span className="truncate text-[12.5px] text-fg-2" title={i.title}>{i.title}</span>
                     <span className="ml-auto shrink-0 text-[11px] text-muted">{fmtShort(i.opened_at)}</span>
                   </Link>
                 </li>
@@ -129,8 +129,8 @@ export default function Dashboard() {
             <ResponsiveContainer>
               <BarChart data={drift.data ?? []} margin={{ left: -18, right: 8, top: 8 }}>
                 <CartesianGrid stroke="#1f2630" vertical={false} />
-                <XAxis dataKey="factor" tick={{ fill: '#7c8698', fontSize: 11 }} axisLine={false} tickLine={false} interval={0} />
-                <YAxis tick={{ fill: '#7c8698', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <XAxis dataKey="factor" tick={{ fill: '#9aa4b5', fontSize: 11 }} axisLine={false} tickLine={false} interval={0} />
+                <YAxis tick={{ fill: '#9aa4b5', fontSize: 11 }} axisLine={false} tickLine={false} />
                 <Tooltip {...tip} />
                 <ReferenceLine y={0.25} stroke="#f5b83d" strokeDasharray="4 4" label={{ value: 'threshold', fill: '#f5b83d', fontSize: 10, position: 'insideTopRight' }} />
                 <Bar dataKey="psi" name="PSI" radius={[3, 3, 0, 0]} animationDuration={900}>
@@ -147,8 +147,8 @@ export default function Dashboard() {
             <ResponsiveContainer>
               <BarChart data={contribData ?? []} layout="vertical" margin={{ left: -10, right: 16 }}>
                 <CartesianGrid stroke="#1f2630" horizontal={false} />
-                <XAxis type="number" tick={{ fill: '#7c8698', fontSize: 11 }} axisLine={false} tickLine={false} unit="%" />
-                <YAxis type="category" dataKey="contributor_id" tick={{ fill: '#b4bccb', fontSize: 11, fontFamily: 'JetBrains Mono Variable' }} axisLine={false} tickLine={false} width={48} />
+                <XAxis type="number" tick={{ fill: '#9aa4b5', fontSize: 11 }} axisLine={false} tickLine={false} unit="%" />
+                <YAxis type="category" dataKey="contributor_id" tick={{ fill: '#cbd2de', fontSize: 11, fontFamily: 'JetBrains Mono Variable' }} axisLine={false} tickLine={false} width={48} />
                 <Tooltip {...tip} formatter={(v) => [`${v}%`, 'flagged']} />
                 <Bar dataKey="rate" radius={[0, 3, 3, 0]} animationDuration={900}>
                   {(contribData ?? []).map((c) => <Cell key={c.contributor_id} fill={severityVar[c.max_severity]} />)}
@@ -159,10 +159,10 @@ export default function Dashboard() {
           <div className="mt-2 text-[11.5px] text-muted">C17 had 318 of 412 samples flagged within a 40-minute burst.</div>
         </Panel>
 
-        <Panel title="High / critical findings">
-          <ul className="divide-y divide-line/60">
+        <Panel title="High / critical findings" className="xl:col-span-3">
+          <ul className="grid gap-x-8 md:grid-cols-2">
             {hi.map((f) => (
-              <li key={f.finding_id} className="flex items-start gap-3 py-2">
+              <li key={f.finding_id} className="flex items-start gap-3 border-b border-line/60 py-2">
                 <Id>{f.finding_id}</Id>
                 <div className="min-w-0 flex-1 text-[12.5px] text-fg-2">{f.summary}</div>
                 <SeverityBadge s={f.severity} />
