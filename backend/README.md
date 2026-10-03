@@ -25,6 +25,37 @@ the air-gapped host and set `CVTRUST_WEIGHTS_DIR`. The weights are loaded with `
 cd backend && pytest -q
 ```
 
+## API (`/api/v1`, docs/17)
+
+| method | path | notes |
+|---|---|---|
+| GET | `/health` | liveness + versions |
+| POST | `/assets` | register a local YOLO dataset `{path, name?, contributor_id?}`; path must sit under `CVTRUST_DATA_ROOTS` (default `backend/testdata`) |
+| GET | `/assets`, `/assets/{id}` | |
+| POST | `/assessments` | `{asset_id \| dataset_path, assessment_type: "DATASET_INTEGRITY", options}` returns 202 QUEUED and runs in the background; `options.wait=true` runs inline |
+| GET | `/assessments`, `/assessments/{id}` | status, progress, per-detector status, structured errors, finding_ids |
+| GET | `/findings` | filters: `severity`, `status`, `asset_id`, `contributor_id`, `assessment_id` |
+| GET | `/findings/{id}` | |
+| GET | `/evidence`, `/evidence/{id}` | doc 12 evidence records (filters: `assessment_id`, `detector`, `asset_id`); an extension to doc 17 |
+| GET | `/incidents`, `/incidents/{id}`, `/incidents/{id}/graph`, `/incidents/{id}/timeline`, `/incidents/{id}/objective` | objective returns `[]` (inference not implemented) |
+| POST | `/dispositions` | records the analyst action and appends an audit event; QUARANTINE marks the dataset asset QUARANTINED |
+| GET | `/audit/events` | |
+| POST | `/audit/verify` | hash chain + HMAC signature check |
+| GET | `/capabilities` | honest list of what is and isn't implemented |
+| POST | `/provenance/verify` | 501 `CAPABILITY_NOT_IMPLEMENTED` |
+
+Errors use `{"error": {"code", "message", "recoverable", ...}}`. Records persist in SQLite at `CVTRUST_DB`
+(default `backend/var/cvtrust.sqlite3`); the audit HMAC key lives at `CVTRUST_AUDIT_KEY` (default `backend/var/audit.key`).
+
+Scan the held-out TEST split:
+
+```bash
+curl -s -XPOST localhost:8000/api/v1/assessments -H 'content-type: application/json' \
+  -d '{"dataset_path": "test/dataset", "contributor_id": "C17"}'
+curl -s localhost:8000/api/v1/assessments/ASM-001     # wait for SUCCEEDED (about 20 s on CPU)
+curl -s localhost:8000/api/v1/findings
+```
+
 ## Pointing the frontend at it
 
 The frontend stays on its in-browser mock unless `VITE_API_BASE` is set:
@@ -34,7 +65,9 @@ cd frontend
 VITE_API_BASE=http://127.0.0.1:8000 npm run dev
 ```
 
-CORS allows `http://localhost:5173` by default; override with `CVTRUST_CORS_ORIGINS` (comma-separated).
+Mock mode stays the default for `npm run dev`, `npm run build` and the Vercel deploy. With `VITE_API_BASE` set, the sidebar shows "Live backend".
+The dashboard's drift, contributor-risk and trend widgets still use mock data, because the backend has no endpoints for them yet.
+CORS allows `http://localhost:5173` and `:4173` by default; override with `CVTRUST_CORS_ORIGINS` (comma-separated).
 
 ## Evaluation batch
 
