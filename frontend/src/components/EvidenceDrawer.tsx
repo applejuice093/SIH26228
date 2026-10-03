@@ -3,6 +3,9 @@ import { api } from '../api/client'
 import { pct, fmtDate } from '../lib/format'
 import { Kv, SeverityBadge, StateBadge } from './ui'
 
+// Flat values render as text; nested objects/arrays from the real backend render as compact JSON.
+const show = (v: unknown) => (v !== null && typeof v === 'object' ? JSON.stringify(v) : String(v))
+
 export default function EvidenceDrawer({ id, onClose, onOpen }: { id: string | null; onClose: () => void; onOpen: (id: string) => void }) {
   const { data } = useQuery({ queryKey: ['evidence'], queryFn: api.evidence })
   if (!id) return null
@@ -30,13 +33,13 @@ export default function EvidenceDrawer({ id, onClose, onOpen }: { id: string | n
             <div>
               <div className="card-title">Measured values</div>
               <table className="table-base"><tbody>
-                {Object.entries(ev.measurements).map(([k, v]) => <tr key={k}><td className="font-mono text-xs">{k}</td><td>{String(v)}</td></tr>)}
+                {Object.entries(ev.measurements).map(([k, v]) => <tr key={k}><td className="font-mono text-xs">{k}</td><td className="break-all">{show(v)}</td></tr>)}
               </tbody></table>
             </div>
             <div>
               <div className="card-title">Threshold / reference</div>
               <table className="table-base"><tbody>
-                {Object.entries(ev.baseline).map(([k, v]) => <tr key={k}><td className="font-mono text-xs">{k}</td><td>{String(v)}</td></tr>)}
+                {Object.entries(ev.baseline).map(([k, v]) => <tr key={k}><td className="font-mono text-xs">{k}</td><td className="break-all">{show(v)}</td></tr>)}
               </tbody></table>
             </div>
             <div>

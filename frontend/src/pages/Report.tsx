@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
-import { api } from '../api/client'
+import { api, LIVE_BACKEND } from '../api/client'
 import { Loading, SeverityBadge, StateBadge } from '../components/ui'
 import { fmtDate, pct } from '../lib/format'
 
@@ -53,7 +53,7 @@ export default function Report() {
       <section>
         <h2 className="card-title">6. Coverage and limitations</h2>
         <p className="text-sm">{Object.entries(i.coverage).map(([k, v]) => `${k}: ${v}`).join(' · ')}</p>
-        <ul className="list-disc pl-5 text-sm">{[...i.limitations, 'Report generated from example data in the offline demo build.'].map((l) => <li key={l}>{l}</li>)}</ul>
+        <ul className="list-disc pl-5 text-sm">{[...i.limitations, LIVE_BACKEND ? 'Report generated from the local CV-TRUST backend.' : 'Report generated from example data in the offline demo build.'].map((l) => <li key={l}>{l}</li>)}</ul>
       </section>
     </article>
   )

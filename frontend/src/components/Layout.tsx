@@ -5,6 +5,7 @@ import {
   Menu, ScrollText, ShieldCheck, SlidersHorizontal, X,
 } from 'lucide-react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { LIVE_BACKEND } from '../api/client'
 
 const groups = [
   { label: 'Overview', items: [
@@ -71,7 +72,7 @@ export default function Layout() {
         </nav>
         <div className="border-t border-line px-4 py-3 text-[11px] text-muted">
           <div className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-ok" />Air-gapped · no external calls</div>
-          <div className="mt-1 flex items-center gap-2"><ClipboardCheck className="h-3 w-3" />Demo build · example data</div>
+          <div className="mt-1 flex items-center gap-2"><ClipboardCheck className="h-3 w-3" />{LIVE_BACKEND ? 'Live backend · local API' : 'Demo build · example data'}</div>
         </div>
       </aside>
       <main id="main" tabIndex={-1} className="min-w-0 outline-none flex-1 px-3 pb-6 pt-16 sm:px-5 lg:px-7 lg:pt-6">

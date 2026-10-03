@@ -6,6 +6,8 @@ import type {
 } from './types'
 
 const BASE = import.meta.env.VITE_API_BASE as string | undefined
+/** True when VITE_API_BASE points the console at a real backend instead of the in-browser mock. */
+export const LIVE_BACKEND: string | null = BASE ?? null
 const delay = <T,>(v: T, ms = 150) => new Promise<T>((r) => setTimeout(() => r(structuredClone(v)), ms))
 
 async function http<T>(path: string, init?: RequestInit): Promise<T> {

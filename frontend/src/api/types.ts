@@ -42,8 +42,9 @@ export interface Evidence {
   access_mode: AccessMode
   asset_ids: string[]
   observation: string
-  measurements: Record<string, number | string>
-  baseline: Record<string, number | string>
+  // Mock data uses flat values; the real backend may nest objects/arrays (docs/12 leaves these open).
+  measurements: Record<string, unknown>
+  baseline: Record<string, unknown>
   decision_rule: string
   confidence: number
   severity: Severity

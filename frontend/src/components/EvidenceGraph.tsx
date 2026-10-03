@@ -13,11 +13,14 @@ export default function EvidenceGraph({ graph, onEvidence, height = 380, compact
   const rows: Record<number, number> = {}
   const colW = compact ? 235 : 200
   const flagged = new Map(graph.edges.filter((e) => e.relation === 'FLAGS').map((e) => [e.target, e.source]))
+  const evPerTarget: Record<string, number> = {}
   const nodes: Node[] = graph.nodes.map((n) => {
     let x: number, y: number
     if (n.type === 'EVIDENCE') {
       const t = graph.nodes.find((m) => m.id === graph.edges.find((e) => e.source === n.id)?.target)
-      x = (column[t?.type ?? 'DATASET'] ?? 1) * colW; y = compact ? 175 : 190
+      // several evidence nodes can flag the same asset (real backend); stack them instead of overlapping
+      const k = t ? (evPerTarget[t.id] = (evPerTarget[t.id] ?? -1) + 1) : 0
+      x = (column[t?.type ?? 'DATASET'] ?? 1) * colW; y = (compact ? 175 : 190) + k * (compact ? 72 : 64)
     } else {
       const c = column[n.type] ?? 0; const r = (rows[c] = (rows[c] ?? -1) + 1)
       x = c * colW; y = r * (compact ? 82 : 88)
