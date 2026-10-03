@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from _common import CONFIG, DATA, RESULTS, ground_truth, read_json, sha256_file, write_json
 
 from app.core import thresholds as th
-from app.engines.data_integrity import evaluation, patch_trigger
+from app.engines.data_integrity import evaluation, label_flip, patch_trigger
 from app.engines.data_integrity.dataset import load_yolo
 
 
@@ -21,7 +21,15 @@ def run_patch(split: str) -> dict:
     return evaluation.score_patch(ground_truth(split), ev)
 
 
-RUNNERS = {patch_trigger.DETECTOR: run_patch}
+def run_flip(split: str) -> dict:
+    cfg = th.load()["detectors"][label_flip.DETECTOR]
+    ev, _, batch = label_flip.detect(load_yolo(DATA / split / "dataset"), cfg["thresholds"], label_flip.FlipParams(**cfg["params"]))
+    m = evaluation.score_flip(ground_truth(split), ev, batch["boxes_assessed"], batch["boxes_below_min_side"])
+    m["unit"] = "box+image"
+    return m
+
+
+RUNNERS = {patch_trigger.DETECTOR: run_patch, label_flip.DETECTOR: run_flip}
 
 
 def evaluate(detector: str, split: str) -> dict:
@@ -44,7 +52,13 @@ def render_md(res: dict) -> str:
              "|---|---|---|---|---|---|---|---|---|---|"]
     for det, splits in res["detectors"].items():
         for split in ("test", "tuning"):
-            if split in splits:
+            if split in splits and "box_level" in splits[split]:
+                b, i = splits[split]["box_level"], splits[split]["image_level"]
+                lines.append(f"| {det} | {split.upper()} | box | {b['planted']} | {b['caught']} | {b['false_flags']} | "
+                             f"{i['clean_images_scanned']} | {b['non_target_boxes_assessed']} boxes | {b['precision']} | {b['recall']} |")
+                lines.append(f"| {det} | {split.upper()} | image | {i['planted']} | {i['caught']} | {i['false_flags']} | "
+                             f"{i['clean_images_scanned']} | {i['non_target_images_scanned']} | {i['precision']} | {i['recall']} |")
+            elif split in splits:
                 m = splits[split]
                 lines.append(f"| {det} | {split.upper()} | {m['unit']} | {m['planted']} | {m['caught']} | {m['false_flags']} | "
                              f"{m['clean_images_scanned']} | {m['non_target_images_scanned']} | {m['precision']} | {m['recall']} |")
@@ -52,8 +66,16 @@ def render_md(res: dict) -> str:
               "instance for that detector (includes images carrying other plant types). Precision = TP/(TP+FP), recall = TP/planted.", ""]
     for det, splits in res["detectors"].items():
         for split, m in splits.items():
-            extra = {k: m[k] for k in m if k in ("false_flags_by_plant_type", "localisation_iou_mean", "missed_images", "false_flag_images")}
+            if "box_level" in m:
+                b = m["box_level"]
+                extra = {"boxes_assessed": b["boxes_assessed"], "boxes_below_min_side": b["boxes_below_min_side"],
+                         "clean_image_boxes_flagged": b["clean_image_boxes_flagged"],
+                         "image_false_flags_by_plant_type": m["image_level"]["false_flags_by_plant_type"]}
+            else:
+                extra = {k: m[k] for k in m if k in ("false_flags_by_plant_type", "localisation_iou_mean", "missed_images", "false_flag_images")}
             lines.append(f"- `{det}` / {split}: {extra}")
+            if "manual_review" in m:
+                lines.append(f"  - manual review of false flags: {m['manual_review']['summary']}")
     return "\n".join(lines) + "\n"
 
 
@@ -65,8 +87,12 @@ def main() -> None:
     res = read_json(RESULTS, {"detectors": {}})
     for split in a.split:
         m = evaluate(a.detector, split)
+        old = res["detectors"].get(a.detector, {}).get(split, {})
+        if "manual_review" in old:
+            m["manual_review"] = old["manual_review"]
         res["detectors"].setdefault(a.detector, {})[split] = m
-        print(a.detector, split, {k: m[k] for k in ("planted", "caught", "false_flags", "clean_images_scanned", "precision", "recall")})
+        for lvl, mm in ([("box", m["box_level"]), ("image", m["image_level"])] if "box_level" in m else [("image", m)]):
+            print(a.detector, split, lvl, {k: mm.get(k) for k in ("planted", "caught", "false_flags", "clean_images_scanned", "boxes_assessed", "precision", "recall")})
     res["thresholds_sha256"] = sha256_file(CONFIG)
     res["environment"] = {"python": platform.python_version()}
     res["generated_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")

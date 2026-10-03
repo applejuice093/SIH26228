@@ -37,3 +37,36 @@ def score_patch(gt: dict, evidence: list) -> dict:
         "missed_images": sorted(planted - tp),
         "false_flag_images": sorted(fp),
     }
+
+
+def score_flip(gt: dict, evidence: list, boxes_assessed: int, boxes_below_min_side: int) -> dict:
+    recs = {r["image"]: r for r in gt["images"]}
+    planted_boxes = {(r["image"], f["line"]) for r in recs.values() for f in r.get("flips", [])}
+    planted_imgs = {k for k, r in recs.items() if r["plant"] == "label_flip"}
+    flagged_boxes = {(e.measurements["sample_id"], e.measurements["label_line"]) for e in evidence}
+    flagged_imgs = {b[0] for b in flagged_boxes}
+    tp_b, fp_b = planted_boxes & flagged_boxes, flagged_boxes - planted_boxes
+    tp_i, fp_i = planted_imgs & flagged_imgs, flagged_imgs - planted_imgs
+    total_boxes = sum(r["n_boxes"] for r in recs.values())
+    return {
+        "box_level": {
+            "unit": "box", "boxes_total": total_boxes, "boxes_assessed": boxes_assessed,
+            "boxes_below_min_side": boxes_below_min_side,
+            "planted": len(planted_boxes), "caught": len(tp_b), "missed": len(planted_boxes - tp_b),
+            "false_flags": len(fp_b),
+            "non_target_boxes_assessed": boxes_assessed - len(planted_boxes),
+            "clean_image_boxes_flagged": sum(recs[i]["plant"] is None for i, _ in fp_b),
+            "precision": _ratio(len(tp_b), len(tp_b) + len(fp_b)), "recall": _ratio(len(tp_b), len(planted_boxes)),
+            "false_flag_boxes": sorted(f"{i}#L{ln}" for i, ln in fp_b),
+            "missed_boxes": sorted(f"{i}#L{ln}" for i, ln in planted_boxes - tp_b),
+        },
+        "image_level": {
+            "unit": "image", "images_scanned": len(recs),
+            "planted": len(planted_imgs), "caught": len(tp_i), "missed": len(planted_imgs - tp_i),
+            "false_flags": len(fp_i),
+            "clean_images_scanned": sum(r["plant"] is None for r in recs.values()),
+            "non_target_images_scanned": len(recs) - len(planted_imgs),
+            "false_flags_by_plant_type": {str(t): sum(str(recs[k]["plant"]) == t for k in fp_i) for t in sorted({str(recs[k]["plant"]) for k in fp_i})},
+            "precision": _ratio(len(tp_i), len(tp_i) + len(fp_i)), "recall": _ratio(len(tp_i), len(planted_imgs)),
+        },
+    }

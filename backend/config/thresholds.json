@@ -22,6 +22,36 @@
         "ground_truth_sha256": "sha256:c3980c4169b0ac3eaff9942cd04618113b2fbb542e0f37f735341ca28a8e6345",
         "tuned_at": "2026-10-03T10:23:58+00:00"
       }
+    },
+    "label_flip_knn": {
+      "detector_version": "1.0.0",
+      "params": {
+        "min_side_px": 12.0,
+        "crop_px": 96,
+        "context": 1.2,
+        "geometry_weight": 0.3,
+        "k": 20,
+        "smoothing": 0.1
+      },
+      "encoder": "torchvision-resnet18-imagenet1k-v1",
+      "weights_sha256": "sha256:f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec",
+      "thresholds": {
+        "ratio_max": 0.0236
+      },
+      "selection": {
+        "params": "grid on TUNING (crop/context x geometry weight x k), max average precision",
+        "ratio_max": "box-level F1-maximising cut on TUNING (ties broken by widest gap, midpoint)"
+      },
+      "tuning_observations": {
+        "planted_boxes": 15,
+        "assessed_boxes": 1764,
+        "planted_assessed": 15
+      },
+      "tuned_on": {
+        "split": "tuning",
+        "ground_truth_sha256": "sha256:c3980c4169b0ac3eaff9942cd04618113b2fbb542e0f37f735341ca28a8e6345",
+        "tuned_at": "2026-10-03T10:34:12+00:00"
+      }
     }
   }
 }
