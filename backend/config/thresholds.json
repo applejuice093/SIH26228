@@ -52,6 +52,33 @@
         "ground_truth_sha256": "sha256:c3980c4169b0ac3eaff9942cd04618113b2fbb542e0f37f735341ca28a8e6345",
         "tuned_at": "2026-10-03T10:34:12+00:00"
       }
+    },
+    "near_duplicate": {
+      "detector_version": "1.0.0",
+      "hash_method": "imagehash.phash hash_size=8 (64-bit DCT)",
+      "thresholds": {
+        "phash_candidate_max": 22,
+        "cosine_min": 0.91,
+        "phash_only_max": 16
+      },
+      "selection": {
+        "phash_candidate_max": "max planted TUNING Hamming distance + 8 bits headroom",
+        "cosine_min": "pair-level F1-maximising cut on TUNING candidates (ties broken by widest gap, midpoint)",
+        "phash_only_max": "pair-level F1-maximising Hamming cut on TUNING (fallback when encoder unavailable)"
+      },
+      "tuning_observations": {
+        "planted_pairs": 8,
+        "planted_hamming_max": 14,
+        "non_planted_hamming_min": 18,
+        "candidates": 57,
+        "planted_cosine_min": 0.9376,
+        "non_planted_candidate_cosine_max": 0.8824
+      },
+      "tuned_on": {
+        "split": "tuning",
+        "ground_truth_sha256": "sha256:c3980c4169b0ac3eaff9942cd04618113b2fbb542e0f37f735341ca28a8e6345",
+        "tuned_at": "2026-10-03T10:38:36+00:00"
+      }
     }
   }
 }

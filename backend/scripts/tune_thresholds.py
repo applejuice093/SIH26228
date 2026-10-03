@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 
 from _common import CONFIG, DATA, ground_truth, read_json, sha256_file, best_threshold, write_json
 
-from app.engines.data_integrity import label_flip, patch_trigger
+from app.engines.data_integrity import label_flip, near_duplicate, patch_trigger
 from app.engines.data_integrity.dataset import load_yolo
 
 SPLIT = "tuning"
@@ -66,7 +66,37 @@ def tune_flip() -> dict:
     }
 
 
-TUNERS = {patch_trigger.DETECTOR: tune_patch, label_flip.DETECTOR: tune_flip}
+def tune_dup() -> dict:
+    gt = ground_truth(SPLIT)
+    planted = {frozenset((r["image"], r["duplicate_of"])) for r in gt["images"] if r["plant"] == "near_dup"}
+    ds = load_yolo(DATA / SPLIT / "dataset")
+    allp, _ = near_duplicate.score_pairs(ds, 64, use_embeddings=True)   # every pair
+    is_p = lambda p: frozenset((p.a, p.b)) in planted  # noqa: E731
+    pos_h = [p.hamming for p in allp if is_p(p)]
+    neg_h = [p.hamming for p in allp if not is_p(p)]
+    # Stage 1 (candidates): loose, recall-oriented = max planted TUNING distance + 8 bits of headroom.
+    cand = int(max(pos_h) + 8)
+    # Stage 2: F1-maximising cosine cut among TUNING candidates.
+    c_pos = [p.cosine for p in allp if p.hamming <= cand and is_p(p)]
+    c_neg = [p.cosine for p in allp if p.hamming <= cand and not is_p(p)]
+    cmin = best_threshold(c_pos, c_neg)
+    # Fallback (no encoder): F1-maximising pHash cut (flag if distance <= t).
+    only = int(-best_threshold([-h for h in pos_h], [-h for h in neg_h]))
+    return {
+        "detector_version": near_duplicate.VERSION, "hash_method": near_duplicate.HASH_METHOD,
+        "thresholds": {"phash_candidate_max": cand, "cosine_min": cmin, "phash_only_max": only},
+        "selection": {
+            "phash_candidate_max": "max planted TUNING Hamming distance + 8 bits headroom",
+            "cosine_min": "pair-level F1-maximising cut on TUNING candidates (ties broken by widest gap, midpoint)",
+            "phash_only_max": "pair-level F1-maximising Hamming cut on TUNING (fallback when encoder unavailable)",
+        },
+        "tuning_observations": {"planted_pairs": len(pos_h), "planted_hamming_max": int(max(pos_h)),
+                                "non_planted_hamming_min": int(min(neg_h)), "candidates": len(c_pos) + len(c_neg),
+                                "planted_cosine_min": round(min(c_pos), 4), "non_planted_candidate_cosine_max": round(max(c_neg), 4) if c_neg else None},
+    }
+
+
+TUNERS = {patch_trigger.DETECTOR: tune_patch, label_flip.DETECTOR: tune_flip, near_duplicate.DETECTOR: tune_dup}
 
 
 def main() -> None:

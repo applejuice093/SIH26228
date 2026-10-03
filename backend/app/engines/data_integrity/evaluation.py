@@ -70,3 +70,54 @@ def score_flip(gt: dict, evidence: list, boxes_assessed: int, boxes_below_min_si
             "precision": _ratio(len(tp_i), len(tp_i) + len(fp_i)), "recall": _ratio(len(tp_i), len(planted_imgs)),
         },
     }
+
+
+def score_dup(gt: dict, evidence: list) -> dict:
+    """Pair level: planted pair = (near-dup copy, its original). Image level: involved images = copies + originals."""
+    import itertools
+
+    recs = {r["image"]: r for r in gt["images"]}
+    seq = {k: r["source_image"].split("_")[0] for k, r in recs.items()}
+    planted = {frozenset((k, r["duplicate_of"])) for k, r in recs.items() if r["plant"] == "near_dup"}
+    involved = {x for p in planted for x in p}
+    flagged = set()
+    for e in evidence:
+        for p in e.measurements["pairs"]:
+            flagged.add(frozenset((p["a"], p["b"])))
+    tp, fp = planted & flagged, flagged - planted
+
+    def family(x):  # source sequence of an image (copies inherit their original's sequence)
+        return seq[x]
+
+    def category(pair):
+        a, b = sorted(pair)
+        if family(a) == family(b):
+            return "same_source_sequence"   # e.g. a copy vs a sibling frame of its original, or two frames of one sequence
+        return "unrelated_scenes"
+
+    same_seq_pairs = [frozenset(p) for p in itertools.combinations(sorted(recs), 2)
+                      if seq[p[0]] == seq[p[1]] and frozenset(p) not in planted]
+    flagged_imgs = {x for p in flagged for x in p}
+    tp_i, fp_i = flagged_imgs & involved, flagged_imgs - involved
+    n = len(recs)
+    return {
+        "pair_level": {
+            "unit": "pair", "pairs_compared": n * (n - 1) // 2,
+            "planted": len(planted), "caught": len(tp), "missed": len(planted - tp), "false_flags": len(fp),
+            "precision": _ratio(len(tp), len(tp) + len(fp)), "recall": _ratio(len(tp), len(planted)),
+            "false_pairs_by_category": {c: sum(category(p) == c for p in fp) for c in ("same_source_sequence", "unrelated_scenes")},
+            "unplanted_same_sequence_pairs_present": len(same_seq_pairs),
+            "unplanted_same_sequence_pairs_flagged": sum(p in flagged for p in same_seq_pairs),
+            "false_pairs": sorted(" ~ ".join(sorted(p)) for p in fp),
+            "missed_pairs": sorted(" ~ ".join(sorted(p)) for p in planted - tp),
+        },
+        "image_level": {
+            "unit": "image", "images_scanned": n,
+            "planted": len(involved), "planted_definition": "near-dup copies plus their originals",
+            "caught": len(tp_i), "missed": len(involved - tp_i), "false_flags": len(fp_i),
+            "clean_images_scanned": sum(r["plant"] is None for r in recs.values()),
+            "non_target_images_scanned": n - len(involved),
+            "false_flags_by_plant_type": {str(t): sum(str(recs[k]["plant"]) == t for k in fp_i) for t in sorted({str(recs[k]["plant"]) for k in fp_i})},
+            "precision": _ratio(len(tp_i), len(tp_i) + len(fp_i)), "recall": _ratio(len(tp_i), len(involved)),
+        },
+    }
