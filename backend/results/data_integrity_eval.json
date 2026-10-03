@@ -1,0 +1,55 @@
+{
+  "detectors": {
+    "corner_patch_trigger": {
+      "test": {
+        "unit": "image",
+        "images_scanned": 89,
+        "planted": 12,
+        "caught": 12,
+        "missed": 0,
+        "false_flags": 0,
+        "clean_images_scanned": 53,
+        "non_target_images_scanned": 77,
+        "false_flags_by_plant_type": {},
+        "precision": 1.0,
+        "recall": 1.0,
+        "localisation_iou_mean": 0.2721,
+        "missed_images": [],
+        "false_flag_images": [],
+        "thresholds": {
+          "synthetic_colour_min": 0.207,
+          "outlier_z_min": 31.174
+        },
+        "detector_version": "1.0.0",
+        "ground_truth_sha256": "sha256:18bbc2974d942a39afc3df7e524780608ef53a92e0669071c6d115144ad0d480"
+      },
+      "tuning": {
+        "unit": "image",
+        "images_scanned": 58,
+        "planted": 8,
+        "caught": 8,
+        "missed": 0,
+        "false_flags": 0,
+        "clean_images_scanned": 34,
+        "non_target_images_scanned": 50,
+        "false_flags_by_plant_type": {},
+        "precision": 1.0,
+        "recall": 1.0,
+        "localisation_iou_mean": 0.4271,
+        "missed_images": [],
+        "false_flag_images": [],
+        "thresholds": {
+          "synthetic_colour_min": 0.207,
+          "outlier_z_min": 31.174
+        },
+        "detector_version": "1.0.0",
+        "ground_truth_sha256": "sha256:c3980c4169b0ac3eaff9942cd04618113b2fbb542e0f37f735341ca28a8e6345"
+      }
+    }
+  },
+  "thresholds_sha256": "sha256:e5d8d76b0f953ba9f2d2f4e537f4b07f21ead09486cd55e23206d38bfa23ab17",
+  "environment": {
+    "python": "3.13.5"
+  },
+  "generated_at": "2026-10-03T10:24:46+00:00"
+}
