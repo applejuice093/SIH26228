@@ -1,0 +1,27 @@
+{
+  "comment": "Frozen thresholds. Chosen on the TUNING split only by scripts/tune_thresholds.py; never adjusted after scoring TEST.",
+  "detectors": {
+    "corner_patch_trigger": {
+      "detector_version": "1.0.0",
+      "thresholds": {
+        "synthetic_colour_min": 0.207,
+        "outlier_z_min": 31.174
+      },
+      "selection": {
+        "synthetic_colour_min": "F1-maximising cut on TUNING (ties broken by widest gap, midpoint)",
+        "outlier_z_min": "1.10 x max score among non-patched TUNING images"
+      },
+      "tuning_observations": {
+        "planted": 8,
+        "non_planted": 50,
+        "synthetic_colour_planted_min": 0.4141,
+        "synthetic_colour_non_planted_max": 0.0
+      },
+      "tuned_on": {
+        "split": "tuning",
+        "ground_truth_sha256": "sha256:c3980c4169b0ac3eaff9942cd04618113b2fbb542e0f37f735341ca28a8e6345",
+        "tuned_at": "2026-10-03T10:23:58+00:00"
+      }
+    }
+  }
+}
