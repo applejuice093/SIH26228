@@ -12,6 +12,13 @@ uvicorn app.main:app --host 127.0.0.1 --port 8000
 curl http://127.0.0.1:8000/api/v1/health
 ```
 
+## Offline model weights
+
+The label-flip detector embeds crops with ResNet-18 ImageNet weights read from a local file and never downloads at runtime.
+On a connected machine, run `python scripts/fetch_weights.py` once (it saves to `~/.cache/cvtrust/weights` and checks the sha256). Then copy the file to
+the air-gapped host and set `CVTRUST_WEIGHTS_DIR`. The weights are loaded with `torch.load(weights_only=True)`. Install CPU torch with
+`pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu`.
+
 ## Test
 
 ```bash
@@ -46,5 +53,6 @@ is held out. They are built from disjoint source sequences and committed under `
 | detector | module | what it flags |
 |---|---|---|
 | `corner_patch_trigger` | `app/engines/data_integrity/patch_trigger.py` | small square patches near image corners whose statistics differ from both the image's own windows and the batch's corner windows |
+| `label_flip_knn` | `app/engines/data_integrity/label_flip.py` | YOLO boxes whose class disagrees with their k nearest neighbours in an offline ResNet-18 crop-embedding space (confident-learning style per-class baseline) |
 
 Evidence records follow docs/12 section 4 (`app/schemas/records.py`), which rejects unknown fields and enum values.

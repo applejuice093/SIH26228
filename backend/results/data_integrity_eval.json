@@ -45,11 +45,203 @@
         "detector_version": "1.0.0",
         "ground_truth_sha256": "sha256:c3980c4169b0ac3eaff9942cd04618113b2fbb542e0f37f735341ca28a8e6345"
       }
+    },
+    "label_flip_knn": {
+      "test": {
+        "box_level": {
+          "unit": "box",
+          "boxes_total": 5257,
+          "boxes_assessed": 2048,
+          "boxes_below_min_side": 3209,
+          "planted": 24,
+          "caught": 13,
+          "missed": 11,
+          "false_flags": 10,
+          "non_target_boxes_assessed": 2024,
+          "clean_image_boxes_flagged": 9,
+          "precision": 0.5652,
+          "recall": 0.5417,
+          "false_flag_boxes": [
+            "images/img_0004.jpg#L16",
+            "images/img_0013.jpg#L49",
+            "images/img_0025.jpg#L24",
+            "images/img_0055.jpg#L14",
+            "images/img_0061.jpg#L25",
+            "images/img_0071.jpg#L1",
+            "images/img_0074.jpg#L39",
+            "images/img_0074.jpg#L40",
+            "images/img_0082.jpg#L46",
+            "images/img_0088.jpg#L66"
+          ],
+          "missed_boxes": [
+            "images/img_0033.jpg#L5",
+            "images/img_0037.jpg#L127",
+            "images/img_0043.jpg#L8",
+            "images/img_0050.jpg#L18",
+            "images/img_0051.jpg#L18",
+            "images/img_0051.jpg#L34",
+            "images/img_0064.jpg#L17",
+            "images/img_0084.jpg#L2",
+            "images/img_0084.jpg#L4",
+            "images/img_0084.jpg#L5",
+            "images/img_0085.jpg#L41"
+          ]
+        },
+        "image_level": {
+          "unit": "image",
+          "images_scanned": 89,
+          "planted": 12,
+          "caught": 9,
+          "missed": 3,
+          "false_flags": 9,
+          "clean_images_scanned": 53,
+          "non_target_images_scanned": 77,
+          "false_flags_by_plant_type": {
+            "None": 8,
+            "corner_patch": 1
+          },
+          "precision": 0.5,
+          "recall": 0.75
+        },
+        "unit": "box+image",
+        "thresholds": {
+          "ratio_max": 0.0236
+        },
+        "detector_version": "1.0.0",
+        "ground_truth_sha256": "sha256:18bbc2974d942a39afc3df7e524780608ef53a92e0669071c6d115144ad0d480",
+        "manual_review": {
+          "method": "Quick visual look at each TEST false-flag crop (3x box context, upscaled) by the implementing agent after scoring; not an expert re-annotation. Thresholds were not changed.",
+          "counts": {
+            "possible_label_error": 1,
+            "true_false_positive": 5,
+            "indeterminate": 4
+          },
+          "summary": "10 false-flag boxes: 1 look like a genuine VisDrone label error, 5 are true false positives (label looks correct; mostly small two-wheelers occluded by or next to cars and signs), and 4 can't be judged at this resolution.",
+          "items": [
+            {
+              "box": "images/img_0004.jpg#L16",
+              "label_to_suggested": "people->pedestrian",
+              "verdict": "possible_label_error",
+              "note": "Person standing beside a tricycle labelled 'people'; VisDrone reserves 'people' for non-walking persons, so 'pedestrian' is arguably correct."
+            },
+            {
+              "box": "images/img_0013.jpg#L49",
+              "label_to_suggested": "motor->van",
+              "verdict": "true_false_positive",
+              "note": "Motorbike with riders partly hidden behind a van; label looks correct, and the crop is dominated by vehicles."
+            },
+            {
+              "box": "images/img_0025.jpg#L24",
+              "label_to_suggested": "motor->car",
+              "verdict": "true_false_positive",
+              "note": "Motorbike occluded behind a parked car; the box region mostly shows the car's rear."
+            },
+            {
+              "box": "images/img_0055.jpg#L14",
+              "label_to_suggested": "motor->van",
+              "verdict": "indeterminate",
+              "note": "Two-wheeler under tree foliage; can't verify the class at this resolution."
+            },
+            {
+              "box": "images/img_0061.jpg#L25",
+              "label_to_suggested": "motor->bus",
+              "verdict": "indeterminate",
+              "note": "Small parked two-wheeler; could be a bicycle rather than a motor, can't confirm."
+            },
+            {
+              "box": "images/img_0071.jpg#L1",
+              "label_to_suggested": "pedestrian->motor",
+              "verdict": "indeterminate",
+              "note": "Crouching or seated person in pink, possibly on a scooter (would be 'people'); unclear."
+            },
+            {
+              "box": "images/img_0074.jpg#L39",
+              "label_to_suggested": "motor->van",
+              "verdict": "true_false_positive",
+              "note": "Scooter behind a pole and road sign; label looks correct, occlusion confuses the embedding."
+            },
+            {
+              "box": "images/img_0074.jpg#L40",
+              "label_to_suggested": "motor->awning-tricycle",
+              "verdict": "true_false_positive",
+              "note": "Red scooter behind a road sign; label looks correct."
+            },
+            {
+              "box": "images/img_0082.jpg#L46",
+              "label_to_suggested": "pedestrian->motor",
+              "verdict": "indeterminate",
+              "note": "12x12 px blurred person, possibly riding (would be 'people'); unclear."
+            },
+            {
+              "box": "images/img_0088.jpg#L66",
+              "label_to_suggested": "motor->car",
+              "verdict": "true_false_positive",
+              "note": "Clearly a parked motorbike; label correct."
+            }
+          ]
+        }
+      },
+      "tuning": {
+        "box_level": {
+          "unit": "box",
+          "boxes_total": 4659,
+          "boxes_assessed": 1764,
+          "boxes_below_min_side": 2895,
+          "planted": 15,
+          "caught": 10,
+          "missed": 5,
+          "false_flags": 9,
+          "non_target_boxes_assessed": 1749,
+          "clean_image_boxes_flagged": 7,
+          "precision": 0.5263,
+          "recall": 0.6667,
+          "false_flag_boxes": [
+            "images/img_0000.jpg#L28",
+            "images/img_0002.jpg#L52",
+            "images/img_0004.jpg#L96",
+            "images/img_0008.jpg#L40",
+            "images/img_0024.jpg#L29",
+            "images/img_0032.jpg#L4",
+            "images/img_0039.jpg#L8",
+            "images/img_0046.jpg#L27",
+            "images/img_0048.jpg#L52"
+          ],
+          "missed_boxes": [
+            "images/img_0034.jpg#L7",
+            "images/img_0041.jpg#L22",
+            "images/img_0044.jpg#L45",
+            "images/img_0047.jpg#L149",
+            "images/img_0052.jpg#L28"
+          ]
+        },
+        "image_level": {
+          "unit": "image",
+          "images_scanned": 58,
+          "planted": 8,
+          "caught": 7,
+          "missed": 1,
+          "false_flags": 8,
+          "clean_images_scanned": 34,
+          "non_target_images_scanned": 50,
+          "false_flags_by_plant_type": {
+            "None": 7,
+            "corner_patch": 1
+          },
+          "precision": 0.4667,
+          "recall": 0.875
+        },
+        "unit": "box+image",
+        "thresholds": {
+          "ratio_max": 0.0236
+        },
+        "detector_version": "1.0.0",
+        "ground_truth_sha256": "sha256:c3980c4169b0ac3eaff9942cd04618113b2fbb542e0f37f735341ca28a8e6345"
+      }
     }
   },
-  "thresholds_sha256": "sha256:e5d8d76b0f953ba9f2d2f4e537f4b07f21ead09486cd55e23206d38bfa23ab17",
+  "thresholds_sha256": "sha256:771334f343faf4eb9b3e9561ceac15c35b71f4d1f0fff676bacce1c21877e4ba",
   "environment": {
     "python": "3.13.5"
   },
-  "generated_at": "2026-10-03T10:24:46+00:00"
+  "generated_at": "2026-10-03T10:34:56+00:00"
 }
