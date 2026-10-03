@@ -86,7 +86,7 @@ def render_md(res: dict) -> str:
     lines += ["", "Definitions: *clean* = image with no plant of any kind. *non-target* = every scanned unit that is not a planted "
               "instance for that detector (includes images carrying other plant types). Precision = TP/(TP+FP), recall = TP/planted.", ""]
     for det, splits in res["detectors"].items():
-        for split, m in splits.items():
+        for split, m in ((k, v) for k, v in splits.items() if k in ("test", "tuning")):
             if "box_level" in m:
                 b = m["box_level"]
                 extra = {"boxes_assessed": b["boxes_assessed"], "boxes_below_min_side": b["boxes_below_min_side"],
@@ -103,6 +103,13 @@ def render_md(res: dict) -> str:
             lines.append(f"- `{det}` / {split}: {extra}")
             if "manual_review" in m:
                 lines.append(f"  - manual review of false flags: {m['manual_review']['summary']}")
+    probe = res["detectors"].get("near_duplicate", {}).get("visdrone_consecutive_frames_probe")
+    if probe:
+        lines += ["", "## VisDrone consecutive-frame probe (near_duplicate)", "",
+                  f"{probe['description']} Of {probe['consecutive_pairs']} consecutive pairs, the frozen two-stage rule flags "
+                  f"{probe['flagged_two_stage']} ({probe['flagged_fraction_two_stage']:.1%}) and the pHash-only fallback flags "
+                  f"{probe['flagged_phash_only_fallback']} ({probe['flagged_fraction_phash_only']:.1%}). "
+                  + probe.get("manual_look", "")]
     return "\n".join(lines) + "\n"
 
 

@@ -237,11 +237,154 @@
         "detector_version": "1.0.0",
         "ground_truth_sha256": "sha256:c3980c4169b0ac3eaff9942cd04618113b2fbb542e0f37f735341ca28a8e6345"
       }
+    },
+    "near_duplicate": {
+      "test": {
+        "pair_level": {
+          "unit": "pair",
+          "pairs_compared": 3916,
+          "planted": 12,
+          "caught": 12,
+          "missed": 0,
+          "false_flags": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "false_pairs_by_category": {
+            "same_source_sequence": 0,
+            "unrelated_scenes": 0
+          },
+          "unplanted_same_sequence_pairs_present": 41,
+          "unplanted_same_sequence_pairs_flagged": 0,
+          "false_pairs": [],
+          "missed_pairs": []
+        },
+        "image_level": {
+          "unit": "image",
+          "images_scanned": 89,
+          "planted": 24,
+          "planted_definition": "near-dup copies plus their originals",
+          "caught": 24,
+          "missed": 0,
+          "false_flags": 0,
+          "clean_images_scanned": 53,
+          "non_target_images_scanned": 65,
+          "false_flags_by_plant_type": {},
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "mode": "phash+embedding",
+        "phash_only_fallback": {
+          "pair_level": {
+            "planted": 12,
+            "caught": 12,
+            "false_flags": 3,
+            "precision": 0.8,
+            "recall": 1.0
+          },
+          "image_level": {
+            "planted": 24,
+            "caught": 24,
+            "false_flags": 5,
+            "precision": 0.8276,
+            "recall": 1.0
+          }
+        },
+        "unit": "pair+image",
+        "thresholds": {
+          "phash_candidate_max": 22,
+          "cosine_min": 0.91,
+          "phash_only_max": 16
+        },
+        "detector_version": "1.0.0",
+        "ground_truth_sha256": "sha256:18bbc2974d942a39afc3df7e524780608ef53a92e0669071c6d115144ad0d480",
+        "manual_review": {
+          "summary": "Two-stage mode: 0 false pairs. 41 unplanted same-sequence pairs are in TEST (first vs last frame of a sequence, or a copy vs its original's sibling frame) and none were flagged: the closest is at Hamming 20 / cosine 0.825, and the highest same-sequence cosine is 0.909 (threshold 0.91) at Hamming 26, outside the candidate stage. pHash-only fallback: 3 false pairs (Hamming 14-16), all between different VisDrone sequences that share a similar road-perspective layout (checked visually). These are true false positives, not natural duplicates."
+        }
+      },
+      "tuning": {
+        "pair_level": {
+          "unit": "pair",
+          "pairs_compared": 1653,
+          "planted": 8,
+          "caught": 8,
+          "missed": 0,
+          "false_flags": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "false_pairs_by_category": {
+            "same_source_sequence": 0,
+            "unrelated_scenes": 0
+          },
+          "unplanted_same_sequence_pairs_present": 25,
+          "unplanted_same_sequence_pairs_flagged": 0,
+          "false_pairs": [],
+          "missed_pairs": []
+        },
+        "image_level": {
+          "unit": "image",
+          "images_scanned": 58,
+          "planted": 16,
+          "planted_definition": "near-dup copies plus their originals",
+          "caught": 16,
+          "missed": 0,
+          "false_flags": 0,
+          "clean_images_scanned": 34,
+          "non_target_images_scanned": 42,
+          "false_flags_by_plant_type": {},
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "mode": "phash+embedding",
+        "phash_only_fallback": {
+          "pair_level": {
+            "planted": 8,
+            "caught": 8,
+            "false_flags": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "image_level": {
+            "planted": 16,
+            "caught": 16,
+            "false_flags": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "unit": "pair+image",
+        "thresholds": {
+          "phash_candidate_max": 22,
+          "cosine_min": 0.91,
+          "phash_only_max": 16
+        },
+        "detector_version": "1.0.0",
+        "ground_truth_sha256": "sha256:c3980c4169b0ac3eaff9942cd04618113b2fbb542e0f37f735341ca28a8e6345"
+      },
+      "visdrone_consecutive_frames_probe": {
+        "description": "Consecutive frames (sorted by name) within each VisDrone2019-DET-val sequence, all 76 sequences; not planted, so every flag is a natural near-duplicate.",
+        "sequences": 76,
+        "consecutive_pairs": 472,
+        "flagged_two_stage": 59,
+        "flagged_fraction_two_stage": 0.125,
+        "flagged_phash_only_fallback": 27,
+        "flagged_fraction_phash_only": 0.0572,
+        "hamming_quantiles": {
+          "5": 16.0,
+          "25": 22.0,
+          "50": 28.0
+        },
+        "cosine_quantiles": {
+          "50": 0.8774,
+          "75": 0.9076,
+          "95": 0.9345
+        },
+        "manual_look": "A quick visual check of the highest-distance flagged pairs (Hamming 22, cosine 0.92-0.93) shows the same street scene with the drone slightly moved. That is redundant footage, not a contributor copy. The evaluation batch takes only the first and last frame of each sequence, so few of these pairs are in it; a batch built from consecutive frames would see about one in eight neighbouring frames flagged."
+      }
     }
   },
-  "thresholds_sha256": "sha256:771334f343faf4eb9b3e9561ceac15c35b71f4d1f0fff676bacce1c21877e4ba",
+  "thresholds_sha256": "sha256:edcb06687c71a29302eae1ba3b656345696333f2db94aab1a92030b1a2ed8fb8",
   "environment": {
     "python": "3.13.5"
   },
-  "generated_at": "2026-10-03T10:34:56+00:00"
+  "generated_at": "2026-10-03T10:39:08+00:00"
 }

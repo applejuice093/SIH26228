@@ -48,11 +48,13 @@ is held out. They are built from disjoint source sequences and committed under `
    `config/thresholds.json`, recording the TUNING ground-truth digest.
 2. `python scripts/evaluate.py --detector <name> --split test --split tuning` runs the frozen thresholds and writes
    `results/data_integrity_eval.{json,md}`. TEST is scored once, after the thresholds are committed.
-3. `pytest` re-runs every detector on TEST and checks that the output matches the committed results file.
+3. `python scripts/probe_consecutive_frames.py` is a diagnostic that measures how often the frozen near-duplicate rule fires on consecutive VisDrone frames.
+4. `pytest` re-runs every detector on TEST and checks that the output matches the committed results file.
 
 | detector | module | what it flags |
 |---|---|---|
 | `corner_patch_trigger` | `app/engines/data_integrity/patch_trigger.py` | small square patches near image corners whose statistics differ from both the image's own windows and the batch's corner windows |
 | `label_flip_knn` | `app/engines/data_integrity/label_flip.py` | YOLO boxes whose class disagrees with their k nearest neighbours in an offline ResNet-18 crop-embedding space (confident-learning style per-class baseline) |
+| `near_duplicate` | `app/engines/data_integrity/near_duplicate.py` | exact copies (sha256) and near-duplicates: pHash Hamming candidates confirmed by embedding cosine, with a pHash-only fallback when no encoder is available |
 
 Evidence records follow docs/12 section 4 (`app/schemas/records.py`), which rejects unknown fields and enum values.
