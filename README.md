@@ -7,7 +7,7 @@ Offline, air-gapped assurance platform for computer-vision pipelines: training-d
 ```text
 docs/       Full specification (start with docs/README.md and docs/00_MASTER_SPEC.md)
 frontend/   Analyst console (React + TypeScript + Vite + Tailwind)
-backend/    Assessment engines and API (planned, see docs/10_BACKEND.md)
+backend/    Assessment engines and FastAPI service (see backend/README.md)
 ```
 
 ## Status
