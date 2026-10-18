@@ -272,6 +272,9 @@ class DataIntegrityService:
 
     def dispose(self, finding_id: str, action: str, reason: str, actor_id: str) -> dict:
         f = self.get("finding", finding_id)
+        if f["status"] == "CLOSED":
+            raise ApiError(409, "FINDING_CLOSED", f"finding {finding_id} is already closed; open a new review instead",
+                           recoverable=False)
         seq = self.store.next_seq("disposition")
         ev = self.audit.append(f"DISPOSITION_{action}", [finding_id] + f["affected_asset_ids"], {"reason": reason}, actor_id=actor_id)
         d = {"disposition_id": f"DSP-{seq}", "finding_id": finding_id, "action": action, "reason": reason,
