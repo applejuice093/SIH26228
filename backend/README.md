@@ -56,6 +56,32 @@ curl -s localhost:8000/api/v1/assessments/ASM-001     # wait for SUCCEEDED (abou
 curl -s localhost:8000/api/v1/findings
 ```
 
+## Configuration
+
+All settings are environment variables read at startup (`app/core/config.py`).
+
+| variable | default | purpose |
+|---|---|---|
+| `CVTRUST_DB` | `backend/var/cvtrust.sqlite3` | SQLite file with assets, assessments, evidence, findings, incidents and the audit chain |
+| `CVTRUST_AUDIT_KEY` | `backend/var/audit.key` | hex HMAC key for the audit chain; created with mode 0600 on first start (must be valid hex, at least 16 bytes) |
+| `CVTRUST_DATA_ROOTS` | `backend/testdata` | allowed dataset roots, separated by `:` (`;` on Windows); paths outside them get 403 `PATH_NOT_ALLOWED` |
+| `CVTRUST_CORS_ORIGINS` | Vite dev/preview on localhost | comma-separated allowed origins |
+| `CVTRUST_WEIGHTS_DIR` | `~/.cache/cvtrust/weights` | where the offline ResNet-18 weights are looked up |
+
+Back up `var/audit.key` together with the database: without the key, `/audit/verify` reports every signature as invalid.
+
+## Error codes
+
+| status | code | when |
+|---|---|---|
+| 403 | `PATH_NOT_ALLOWED` | dataset path resolves outside `CVTRUST_DATA_ROOTS` |
+| 404 | `NOT_FOUND` | unknown asset / assessment / finding / evidence / incident id |
+| 409 | `FINDING_CLOSED` | disposition posted for a finding that is already closed (ACCEPT, QUARANTINE or ROLLBACK) |
+| 422 | `VALIDATION_ERROR` | body failed validation, or an assessment gave neither or both of `asset_id` / `dataset_path` |
+| 422 | `DATASET_FORMAT_UNSUPPORTED` | directory has no `images/` folder |
+| 422 | `ASSESSMENT_TYPE_NOT_SUPPORTED` | anything other than `DATASET_INTEGRITY` |
+| 501 | `CAPABILITY_NOT_IMPLEMENTED` | `/provenance/verify` |
+
 ## Pointing the frontend at it
 
 The frontend stays on its in-browser mock unless `VITE_API_BASE` is set:
