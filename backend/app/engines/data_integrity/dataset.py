@@ -95,7 +95,9 @@ def load_yolo(root: str | Path) -> YoloDataset:
                     continue
                 if len(parts) != 5 or not all(0 <= v <= 1 for v in (cx, cy, w, h)) or w <= 0 or h <= 0:
                     s.label_errors.append(f"line {i}: invalid geometry")
-                if names and not 0 <= c < len(names):
+                if c < 0:
+                    s.label_errors.append(f"line {i}: negative class {c}")
+                elif names and c >= len(names):
                     s.label_errors.append(f"line {i}: class {c} out of range")
                 s.boxes.append(Box(i, c, cx, cy, w, h))
         samples.append(s)
