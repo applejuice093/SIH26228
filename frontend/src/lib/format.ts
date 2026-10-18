@@ -15,4 +15,5 @@ export const fmtBytes = (n: number) => {
   return `${n.toFixed(n < 10 && i > 0 ? 1 : 0)} ${u[i]}`
 }
 export const pct = (x: number) => `${Math.round(x * 100)}%`
-export const shortHash = (h: string) => `sha256:${h.slice(0, 12)}…`
+// Accepts both bare hex (mock data) and 'sha256:<hex>' (live backend) without doubling the prefix.
+export const shortHash = (h: string) => `sha256:${h.replace(/^sha256:/, '').slice(0, 12)}…`
