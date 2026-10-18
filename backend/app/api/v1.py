@@ -65,6 +65,8 @@ def get_asset(asset_id: str, s: DataIntegrityService = Depends(svc)):
 def create_assessment(body: AssessmentCreate, bg: BackgroundTasks, s: DataIntegrityService = Depends(svc)):
     if not body.asset_id and not body.dataset_path:
         raise ApiError(422, "VALIDATION_ERROR", "provide asset_id or dataset_path")
+    if body.asset_id and body.dataset_path:
+        raise ApiError(422, "VALIDATION_ERROR", "provide either asset_id or dataset_path, not both")
     asset_id = body.asset_id or s.register_dataset(body.dataset_path, None, body.contributor_id)["asset_id"]
     asm = s.create_assessment(asset_id, body.assessment_type, body.options)
     if body.options.get("wait"):
