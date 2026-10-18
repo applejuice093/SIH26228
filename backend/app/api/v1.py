@@ -19,9 +19,9 @@ class _Req(BaseModel):
 
 
 class AssetCreate(_Req):
-    path: str = Field(description="YOLO dataset directory (absolute, or relative to an allowed data root, e.g. 'test/dataset')")
-    name: str | None = None
-    contributor_id: str | None = None
+    path: str = Field(min_length=1, description="YOLO dataset directory (absolute, or relative to an allowed data root, e.g. 'test/dataset')")
+    name: str | None = Field(None, max_length=200)
+    contributor_id: str | None = Field(None, max_length=64)
 
 
 class AssessmentCreate(_Req):
@@ -36,8 +36,8 @@ class AssessmentCreate(_Req):
 class DispositionCreate(_Req):
     finding_id: str
     action: Literal["ACCEPT", "MONITOR", "REVIEW", "QUARANTINE", "ROLLBACK"]
-    reason: str = Field(min_length=1)
-    actor_id: str = Field(min_length=1)
+    reason: str = Field(min_length=1, max_length=2000)
+    actor_id: str = Field(min_length=1, max_length=64)
 
 
 def svc(request: Request) -> DataIntegrityService:
