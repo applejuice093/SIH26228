@@ -68,17 +68,18 @@ class Audit:
         events = self.events()
         chain_ok, sig_ok, first = True, True, None
         prev = GENESIS
-        for ev in events:
-            good_link = ev["previous_event_hash"] == prev and _digest(ev) == ev["record_digest"]
+        for i, ev in enumerate(events, start=1):
+            digest = str(ev.get("record_digest", ""))
+            good_link = ev.get("previous_event_hash") == prev and _digest(ev) == digest
             good_sig = hmac.compare_digest(
-                ev["signature"], "hmac-sha256:" + hmac.new(self.key, ev["record_digest"].encode(), hashlib.sha256).hexdigest())
+                str(ev.get("signature", "")), "hmac-sha256:" + hmac.new(self.key, digest.encode(), hashlib.sha256).hexdigest())
             if not good_link:
                 chain_ok = False
             if not good_sig:
                 sig_ok = False
             if (not good_link or not good_sig) and first is None:
-                first = ev["sequence"]
-            prev = ev["record_digest"]
+                first = ev.get("sequence", i)
+            prev = digest
         return {"chain_valid": chain_ok, "signatures_valid": sig_ok, "checkpoints_valid": True,
                 "first_failure": first, "events_checked": len(events), "checkpoints": 0,
                 "signature_scheme": "hmac-sha256 (local key)"}
