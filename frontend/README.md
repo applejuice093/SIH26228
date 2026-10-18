@@ -5,13 +5,13 @@ React + TypeScript + Vite + Tailwind console implementing `docs/11_FRONTEND.md`.
 ```bash
 npm install
 npm run dev            # http://localhost:5173
-npm test               # contract tests on the mock API
+npm test               # mock-API contract tests + format helper tests
 npm run build && npm run check:offline
 ```
 
 ## Data source
 
-By default the console runs on a deterministic in-browser mock (`src/api/mockData.ts`), which is **example data only**. Set `VITE_API_BASE=http://localhost:8000` to point it at the backend's `/api/v1` once that exists (see `docs/17_API_CONTRACT.md`).
+By default the console runs on a deterministic in-browser mock (`src/api/mockData.ts`), which is **example data only**. Set `VITE_API_BASE=http://127.0.0.1:8000` to point it at the FastAPI backend's `/api/v1` (see `../backend/README.md` and `docs/17_API_CONTRACT.md`); the sidebar then shows "Live backend". Drift, contributor-risk and trend widgets stay on mock data because the backend has no endpoints for them yet.
 
 ## Pages
 
