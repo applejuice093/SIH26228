@@ -26,7 +26,14 @@ def _key(path: Path) -> bytes:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(secrets.token_hex(32))
         path.chmod(0o600)
-    return bytes.fromhex(path.read_text().strip())
+    raw = path.read_text().strip()
+    try:
+        key = bytes.fromhex(raw)
+    except ValueError:
+        raise ValueError(f"audit key at {path} is not valid hex") from None
+    if len(key) < 16:
+        raise ValueError(f"audit key at {path} is too short ({len(key)} bytes, need >= 16)")
+    return key
 
 
 def _digest(ev: dict) -> str:
