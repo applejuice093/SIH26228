@@ -10,6 +10,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+import os
 import secrets
 from datetime import datetime, timezone
 from pathlib import Path
@@ -24,8 +25,10 @@ GENESIS = "0" * 64
 def _key(path: Path) -> bytes:
     if not path.exists():
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(secrets.token_hex(32))
-        path.chmod(0o600)
+        # create with 0600 up front so the key is never briefly world-readable
+        fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        with os.fdopen(fd, "w") as fh:
+            fh.write(secrets.token_hex(32))
     raw = path.read_text().strip()
     try:
         key = bytes.fromhex(raw)
