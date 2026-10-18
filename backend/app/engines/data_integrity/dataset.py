@@ -54,10 +54,18 @@ def _read_names(root: Path) -> list[str]:
                 return [s.strip().strip("'\"") for s in rest.strip("[]").split(",") if s.strip()]
             continue
         if in_names:
-            if not line.startswith(" "):
+            if not line.strip() or line.lstrip().startswith("#"):
+                continue
+            if not line.startswith((" ", "-")):
                 break
-            k, _, v = line.strip().partition(":")
-            if k.strip().lstrip("-").strip().isdigit():
+            item = line.strip()
+            if item.startswith("-"):
+                # list form: "  - person"
+                names[len(names)] = item[1:].strip().strip("'\"")
+                continue
+            k, _, v = item.partition(":")
+            k = k.strip()
+            if k.isdigit():
                 names[int(k)] = v.strip().strip("'\"")
     return [names[i] for i in sorted(names)]
 
