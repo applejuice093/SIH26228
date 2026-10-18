@@ -258,7 +258,10 @@ class DataIntegrityService:
         edges = [{"source": c, "target": asset["asset_id"], "relation": "SUBMITTED"}]
         for fid in inc["finding_ids"]:
             f = self.get("finding", fid)
-            ev = max((self.store.get("evidence", e) for e in f["evidence_ids"]), key=lambda e: e["confidence"])
+            evs = [e for e in (self.store.get("evidence", x) for x in f["evidence_ids"]) if e]
+            if not evs:
+                continue
+            ev = max(evs, key=lambda e: e["confidence"])
             nodes.append({"id": ev["evidence_id"], "type": "EVIDENCE", "label": f["detector"]})
             edges.append({"source": ev["evidence_id"], "target": asset["asset_id"], "relation": "FLAGS"})
         return {"nodes": nodes, "edges": edges}
