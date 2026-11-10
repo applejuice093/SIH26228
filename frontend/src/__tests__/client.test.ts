@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { api, findingsQuery, normalizeBase } from '../api/client'
+import { api, apiErrorMessage, findingsQuery, normalizeBase } from '../api/client'
 import { evidence, findings, incidents } from '../api/mockData'
 
 describe('mock API contract', () => {
@@ -63,5 +63,16 @@ describe('findingsQuery', () => {
     expect(findingsQuery({})).toBe('')
     expect(findingsQuery({ severity: undefined, status: '' })).toBe('')
     expect(findingsQuery({ severity: 'HIGH', contributor_id: 'C 17' })).toBe('?severity=HIGH&contributor_id=C+17')
+  })
+})
+
+describe('apiErrorMessage', () => {
+  it('uses the backend error envelope when present', () => {
+    const body = JSON.stringify({ error: { code: 'NOT_FOUND', message: 'incident INC-9 not found', recoverable: true } })
+    expect(apiErrorMessage(404, body)).toBe('404 NOT_FOUND: incident INC-9 not found')
+  })
+  it('falls back to the raw body', () => {
+    expect(apiErrorMessage(502, '<html>Bad gateway</html>')).toBe('502 <html>Bad gateway</html>')
+    expect(apiErrorMessage(500, '')).toBe('500')
   })
 })

@@ -20,8 +20,19 @@ async function http<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE}/api/v1${path}`, {
     headers: { 'Content-Type': 'application/json' }, ...init,
   })
-  if (!res.ok) throw new Error(`${res.status} ${await res.text()}`)
+  if (!res.ok) throw new Error(apiErrorMessage(res.status, await res.text()))
   return res.json()
+}
+
+/** Readable message from the backend's `{"error": {"code", "message"}}` envelope, or the raw body. */
+export function apiErrorMessage(status: number, body: string): string {
+  try {
+    const err = JSON.parse(body)?.error
+    if (err && typeof err.message === 'string') return `${status} ${err.code ?? 'ERROR'}: ${err.message}`
+  } catch {
+    // not JSON (proxy error page, etc.)
+  }
+  return `${status} ${body.slice(0, 300)}`.trim()
 }
 
 export interface FindingFilters {
