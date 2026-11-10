@@ -74,7 +74,12 @@ def _crops(ds: YoloDataset, p: FlipParams):
         with Image.open(s.image_path) as im0:
             im = im0.convert("RGB")
         W, H = im.size
-        med = float(np.median([np.sqrt(b.w * W * b.h * H) for b in s.boxes])) or 1.0
+        # Only boxes with positive size: a malformed label row (w or h <= 0, which
+        # load_yolo records as an error but keeps) made sqrt() return NaN here and
+        # turned every geometry feature, and so every neighbour, into NaN.
+        sizes = [np.sqrt(b.w * W * b.h * H) for b in s.boxes if b.w > 0 and b.h > 0]
+        med = float(np.median(sizes)) if sizes else 1.0
+        med = med or 1.0
         for b in s.boxes:
             w, h = b.w * W, b.h * H
             if min(w, h) < p.min_side_px:
