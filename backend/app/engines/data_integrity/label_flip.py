@@ -99,7 +99,9 @@ def score_dataset(ds: YoloDataset, params: FlipParams | None = None) -> tuple[li
     n = len(meta)
     nc = max(len(ds.names), 1 + max((m[3] for m in meta), default=0))
     if n <= p.k:
-        return [], {"boxes_assessed": n, "boxes_below_min_side": skipped, "note": "too few boxes for kNN"}
+        # Keep "k" so detect()'s decision rule doesn't read "k=None".
+        return [], {"boxes_assessed": n, "boxes_below_min_side": skipped, "k": p.k,
+                    "note": f"too few boxes for kNN (need more than k={p.k})"}
     emb = embeddings.embed(np.stack(crops))
     gz = (geo - geo.mean(0)) / (geo.std(0) + 1e-9)
     f = np.hstack([emb, p.geometry_weight * gz])

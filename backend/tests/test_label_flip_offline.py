@@ -19,3 +19,15 @@ def test_crops_geometry_ignores_malformed_zero_size_boxes(tmp_path):
     crops, meta, geo, skipped = label_flip._crops(ds, label_flip.FlipParams())
     assert len(crops) == 2 and skipped == 1
     assert np.isfinite(geo).all()
+
+
+def test_too_few_boxes_skips_embedding_and_reports_k(tmp_path, monkeypatch):
+    ds = _dataset(tmp_path, ["0 0.5 0.5 0.2 0.2", "1 0.3 0.3 0.25 0.15"])
+
+    def _no_embed(_):
+        raise AssertionError("encoder must not run for tiny batches")
+
+    monkeypatch.setattr(label_flip.embeddings, "embed", _no_embed)
+    ev, scores, batch = label_flip.detect(ds, {"ratio_max": 0.02}, label_flip.FlipParams(k=5))
+    assert ev == [] and scores == []
+    assert batch["k"] == 5 and batch["boxes_assessed"] == 2
