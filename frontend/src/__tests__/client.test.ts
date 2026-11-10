@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { api } from '../api/client'
+import { api, normalizeBase } from '../api/client'
 import { evidence, findings, incidents } from '../api/mockData'
 
 describe('mock API contract', () => {
@@ -46,5 +46,14 @@ describe('mock API contract', () => {
     const hs = await api.objective('INC-001')
     expect(hs.length).toBeGreaterThan(0)
     hs.forEach((h) => { expect(h.intent_attribution).toBe('NOT_ESTABLISHED'); expect(h.alternatives.length).toBeGreaterThan(0) })
+  })
+})
+
+describe('live-backend helpers', () => {
+  it('normalizes VITE_API_BASE', () => {
+    expect(normalizeBase(undefined)).toBeUndefined()
+    expect(normalizeBase('   ')).toBeUndefined()
+    expect(normalizeBase('http://localhost:8000/')).toBe('http://localhost:8000')
+    expect(normalizeBase(' http://h:1// ')).toBe('http://h:1')
   })
 })

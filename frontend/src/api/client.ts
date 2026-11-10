@@ -5,7 +5,13 @@ import type {
   EvidenceGraph, Finding, Incident, ObjectiveHypothesis, ProvenanceResult,
 } from './types'
 
-const BASE = import.meta.env.VITE_API_BASE as string | undefined
+/** Strip trailing slashes so `VITE_API_BASE=http://host:8000/` doesn't produce `//api/v1`. */
+export function normalizeBase(raw: string | undefined): string | undefined {
+  const b = raw?.trim().replace(/\/+$/, '')
+  return b ? b : undefined
+}
+
+const BASE = normalizeBase(import.meta.env.VITE_API_BASE as string | undefined)
 /** True when VITE_API_BASE points the console at a real backend instead of the in-browser mock. */
 export const LIVE_BACKEND: string | null = BASE ?? null
 const delay = <T,>(v: T, ms = 150) => new Promise<T>((r) => setTimeout(() => r(structuredClone(v)), ms))
