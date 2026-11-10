@@ -52,11 +52,11 @@ export const api = {
   evidence: (): Promise<Evidence[]> => (BASE ? http('/evidence') : delay(mock.evidence)),
   incidents: (): Promise<Incident[]> => (BASE ? http('/incidents') : delay(mock.incidents)),
   incident: (id: string): Promise<Incident | undefined> =>
-    BASE ? http(`/incidents/${id}`) : delay(mock.incidents.find((i) => i.incident_id === id)),
+    BASE ? http(`/incidents/${encodeURIComponent(id)}`) : delay(mock.incidents.find((i) => i.incident_id === id)),
   graph: (id: string): Promise<EvidenceGraph> =>
-    BASE ? http(`/incidents/${id}/graph`) : delay(mock.graphs[id] ?? { nodes: [], edges: [] }),
+    BASE ? http(`/incidents/${encodeURIComponent(id)}/graph`) : delay(mock.graphs[id] ?? { nodes: [], edges: [] }),
   objective: (id: string): Promise<ObjectiveHypothesis[]> =>
-    BASE ? http(`/incidents/${id}/objective`) : delay(mock.objectives[id] ?? []),
+    BASE ? http(`/incidents/${encodeURIComponent(id)}/objective`) : delay(mock.objectives[id] ?? []),
   verifyProvenance: (record: string, keyIds: string[]): Promise<ProvenanceResult> => {
     if (BASE) return http('/provenance/verify', { method: 'POST', body: JSON.stringify({ record_path: record, expected_key_ids: keyIds }) })
     const r = record.toLowerCase()
