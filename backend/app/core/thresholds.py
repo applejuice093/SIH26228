@@ -14,4 +14,15 @@ def load() -> dict:
 
 
 def for_detector(name: str) -> dict:
-    return load()["detectors"][name]["thresholds"]
+    """Frozen thresholds for ``name``; a clear KeyError if the config lacks them.
+
+    A bare ``KeyError: 'thresholds'`` from a hand-edited config.json used to
+    surface as an opaque ASSESSMENT_FAILED message.
+    """
+    detectors = load().get("detectors") or {}
+    if name not in detectors:
+        raise KeyError(f"detector {name!r} missing from {PATH.name} (have: {sorted(detectors)})")
+    cfg = detectors[name]
+    if not isinstance(cfg.get("thresholds"), dict):
+        raise KeyError(f"detector {name!r} in {PATH.name} has no 'thresholds' mapping")
+    return cfg["thresholds"]
