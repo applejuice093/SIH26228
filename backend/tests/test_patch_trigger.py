@@ -88,3 +88,30 @@ def test_clean_image_not_flagged_and_patch_flagged(tmp_path):
     ev = patch_trigger.detect(load_yolo(tmp_path / "patched"), t)[0]
     assert [e.measurements["sample_id"] for e in ev] == ["images/x0.jpg"]
     assert ev[0].measurements["window"]["corner"] == "bottom_left"
+
+
+def _tiny_dataset(tmp_path, sizes):
+    from PIL import Image
+
+    from app.engines.data_integrity.dataset import YoloDataset
+
+    (tmp_path / "images").mkdir()
+    for i, (w, h) in enumerate(sizes):
+        Image.new("RGB", (w, h), (90, 120, 80)).save(tmp_path / "images" / f"img_{i}.png")
+    ds = load_yolo(tmp_path)
+    assert isinstance(ds, YoloDataset)
+    return ds
+
+
+def test_tiny_images_are_skipped_not_fatal(tmp_path):
+    ds = _tiny_dataset(tmp_path, [(8, 8), (200, 160)])
+    ev, scores, batch = patch_trigger.detect(ds, th.for_detector(DET))
+    assert [s.sample_id for s in scores] == ["images/img_1.png"]
+    assert batch["images_too_small"] == ["images/img_0.png"]
+    assert ev == []
+
+
+def test_dataset_with_only_tiny_images_returns_empty(tmp_path):
+    ds = _tiny_dataset(tmp_path, [(8, 8)])
+    ev, scores, batch = patch_trigger.detect(ds, th.for_detector(DET))
+    assert (ev, scores, batch["images"]) == ([], [], 0)

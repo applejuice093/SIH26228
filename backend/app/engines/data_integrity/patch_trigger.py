@@ -118,6 +118,10 @@ def _image_windows(img: Image.Image, p: PatchParams):
             corner_stats.append(st)
             corner_ext.append(ext)
             meta.append(np.stack([X.ravel(), Y.ravel(), np.full(X.size, w), np.full(X.size, ci)], -1))
+    if not corner_stats:
+        # Image smaller than the smallest window: nothing to scan. Returning empty
+        # arrays (instead of np.concatenate([]) raising) lets the batch go on.
+        return np.zeros((0, len(STAT_NAMES))), np.zeros(0), np.zeros((0, 4)), img_p99
     return np.concatenate(corner_stats), np.concatenate(corner_ext), np.concatenate(meta), img_p99
 
 
@@ -128,15 +132,20 @@ def _win(m) -> dict:
 
 def score_dataset(ds: YoloDataset, params: PatchParams | None = None) -> tuple[list[CornerScore], dict]:
     p = params or PatchParams()
-    per_img, scores = [], []
+    per_img, scores, too_small = [], [], []
     for s in ds.samples:
         with Image.open(s.image_path) as im:
             st, ext, meta, p99 = _image_windows(im, p)
+        if not len(meta):
+            too_small.append(s.sample_id)
+            continue
         base = np.array([p99[int(w)] for w in meta[:, 2]])
         margin = ext - base
         i = int(np.argmax(margin))
         scores.append(CornerScore(s.sample_id, s.asset_id, float(margin[i]), float(ext[i]), float(base[i]), _win(meta[i])))
         per_img.append((st, meta))
+    if not scores:
+        return [], {"images": 0, "images_too_small": too_small, "corner_windows_pooled": 0}
     # batch baseline over pooled corner windows
     pooled = np.concatenate([st for st, _ in per_img])
     med = np.median(pooled, 0)
@@ -151,6 +160,7 @@ def score_dataset(ds: YoloDataset, params: PatchParams | None = None) -> tuple[l
     oz = np.array([s.outlier_z for s in scores])
     batch = {
         "images": len(scores),
+        "images_too_small": too_small,
         "corner_windows_pooled": int(pooled.shape[0]),
         "corner_stat_median": {n: round(float(v), 3) for n, v in zip(STAT_NAMES, med)},
         "corner_stat_mad": {n: round(float(v), 3) for n, v in zip(STAT_NAMES, mad)},

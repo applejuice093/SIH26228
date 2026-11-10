@@ -74,7 +74,12 @@ def _crops(ds: YoloDataset, p: FlipParams):
         with Image.open(s.image_path) as im0:
             im = im0.convert("RGB")
         W, H = im.size
-        med = float(np.median([np.sqrt(b.w * W * b.h * H) for b in s.boxes])) or 1.0
+        # Only boxes with positive size: a malformed label row (w or h <= 0, which
+        # load_yolo records as an error but keeps) made sqrt() return NaN here and
+        # turned every geometry feature, and so every neighbour, into NaN.
+        sizes = [np.sqrt(b.w * W * b.h * H) for b in s.boxes if b.w > 0 and b.h > 0]
+        med = float(np.median(sizes)) if sizes else 1.0
+        med = med or 1.0
         for b in s.boxes:
             w, h = b.w * W, b.h * H
             if min(w, h) < p.min_side_px:
@@ -94,7 +99,9 @@ def score_dataset(ds: YoloDataset, params: FlipParams | None = None) -> tuple[li
     n = len(meta)
     nc = max(len(ds.names), 1 + max((m[3] for m in meta), default=0))
     if n <= p.k:
-        return [], {"boxes_assessed": n, "boxes_below_min_side": skipped, "note": "too few boxes for kNN"}
+        # Keep "k" so detect()'s decision rule doesn't read "k=None".
+        return [], {"boxes_assessed": n, "boxes_below_min_side": skipped, "k": p.k,
+                    "note": f"too few boxes for kNN (need more than k={p.k})"}
     emb = embeddings.embed(np.stack(crops))
     gz = (geo - geo.mean(0)) / (geo.std(0) + 1e-9)
     f = np.hstack([emb, p.geometry_weight * gz])

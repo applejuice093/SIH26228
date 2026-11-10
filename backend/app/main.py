@@ -4,6 +4,7 @@ from __future__ import annotations
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
+from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -29,7 +30,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     store = Store(settings.db_path)
     app.state.store = store
     app.state.service = DataIntegrityService(store, Audit(store, settings.audit_key_path), settings)
-    app.add_middleware(CORSMiddleware, allow_origins=settings.cors_origins, allow_methods=["*"], allow_headers=["*"])
+    # The API only exposes GET and POST routes and the console only sends JSON,
+    # so keep the CORS allow-list that narrow instead of "*".
+    app.add_middleware(CORSMiddleware, allow_origins=settings.cors_origins, allow_methods=["GET", "POST"],
+                       allow_headers=["Content-Type"])
 
     @app.exception_handler(ApiError)
     async def _api_error(_: Request, exc: ApiError):
@@ -37,8 +41,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @app.exception_handler(RequestValidationError)
     async def _validation(_: Request, exc: RequestValidationError):
+        # errors() can carry the raw exception in "ctx" (e.g. from a custom
+        # validator), which plain JSONResponse cannot serialise -> HTTP 500.
         return JSONResponse(status_code=422, content={"error": {"code": "VALIDATION_ERROR", "message": "request failed validation",
-                                                                "recoverable": True, "details": exc.errors()}})
+                                                                "recoverable": True, "details": jsonable_encoder(exc.errors())}})
 
     app.include_router(health_router, prefix=API_PREFIX)
     app.include_router(v1_router, prefix=API_PREFIX)

@@ -5,7 +5,13 @@ import type {
   EvidenceGraph, Finding, Incident, ObjectiveHypothesis, ProvenanceResult,
 } from './types'
 
-const BASE = import.meta.env.VITE_API_BASE as string | undefined
+/** Strip trailing slashes so `VITE_API_BASE=http://host:8000/` doesn't produce `//api/v1`. */
+export function normalizeBase(raw: string | undefined): string | undefined {
+  const b = raw?.trim().replace(/\/+$/, '')
+  return b ? b : undefined
+}
+
+const BASE = normalizeBase(import.meta.env.VITE_API_BASE as string | undefined)
 /** True when VITE_API_BASE points the console at a real backend instead of the in-browser mock. */
 export const LIVE_BACKEND: string | null = BASE ?? null
 const delay = <T,>(v: T, ms = 150) => new Promise<T>((r) => setTimeout(() => r(structuredClone(v)), ms))
@@ -14,12 +20,31 @@ async function http<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE}/api/v1${path}`, {
     headers: { 'Content-Type': 'application/json' }, ...init,
   })
-  if (!res.ok) throw new Error(`${res.status} ${await res.text()}`)
+  if (!res.ok) throw new Error(apiErrorMessage(res.status, await res.text()))
   return res.json()
+}
+
+/** Readable message from the backend's `{"error": {"code", "message"}}` envelope, or the raw body. */
+export function apiErrorMessage(status: number, body: string): string {
+  try {
+    const err = JSON.parse(body)?.error
+    if (err && typeof err.message === 'string') return `${status} ${err.code ?? 'ERROR'}: ${err.message}`
+  } catch {
+    // not JSON (proxy error page, etc.)
+  }
+  return `${status} ${body.slice(0, 300)}`.trim()
 }
 
 export interface FindingFilters {
   severity?: string; status?: string; asset_id?: string; contributor_id?: string; assessment_id?: string
+}
+
+/** Query string for /findings without unset filters (URLSearchParams would send "severity=undefined"). */
+export function findingsQuery(f: FindingFilters): string {
+  const q = new URLSearchParams()
+  for (const [k, v] of Object.entries(f)) if (v) q.set(k, v)
+  const s = q.toString()
+  return s ? `?${s}` : ''
 }
 
 const auditLog = [...mock.auditEvents]
@@ -28,7 +53,7 @@ export const api = {
   assets: (): Promise<Asset[]> => (BASE ? http('/assets') : delay(mock.assets)),
   assessments: (): Promise<Assessment[]> => (BASE ? http('/assessments') : delay(mock.assessments)),
   findings: (f: FindingFilters = {}): Promise<Finding[]> => {
-    if (BASE) return http('/findings?' + new URLSearchParams(f as Record<string, string>))
+    if (BASE) return http('/findings' + findingsQuery(f))
     return delay(mock.findings.filter((x) =>
       (!f.severity || x.severity === f.severity) && (!f.status || x.status === f.status) &&
       (!f.asset_id || x.affected_asset_ids.includes(f.asset_id)) &&
@@ -38,11 +63,11 @@ export const api = {
   evidence: (): Promise<Evidence[]> => (BASE ? http('/evidence') : delay(mock.evidence)),
   incidents: (): Promise<Incident[]> => (BASE ? http('/incidents') : delay(mock.incidents)),
   incident: (id: string): Promise<Incident | undefined> =>
-    BASE ? http(`/incidents/${id}`) : delay(mock.incidents.find((i) => i.incident_id === id)),
+    BASE ? http(`/incidents/${encodeURIComponent(id)}`) : delay(mock.incidents.find((i) => i.incident_id === id)),
   graph: (id: string): Promise<EvidenceGraph> =>
-    BASE ? http(`/incidents/${id}/graph`) : delay(mock.graphs[id] ?? { nodes: [], edges: [] }),
+    BASE ? http(`/incidents/${encodeURIComponent(id)}/graph`) : delay(mock.graphs[id] ?? { nodes: [], edges: [] }),
   objective: (id: string): Promise<ObjectiveHypothesis[]> =>
-    BASE ? http(`/incidents/${id}/objective`) : delay(mock.objectives[id] ?? []),
+    BASE ? http(`/incidents/${encodeURIComponent(id)}/objective`) : delay(mock.objectives[id] ?? []),
   verifyProvenance: (record: string, keyIds: string[]): Promise<ProvenanceResult> => {
     if (BASE) return http('/provenance/verify', { method: 'POST', body: JSON.stringify({ record_path: record, expected_key_ids: keyIds }) })
     const r = record.toLowerCase()
