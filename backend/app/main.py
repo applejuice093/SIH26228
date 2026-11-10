@@ -30,7 +30,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     store = Store(settings.db_path)
     app.state.store = store
     app.state.service = DataIntegrityService(store, Audit(store, settings.audit_key_path), settings)
-    app.add_middleware(CORSMiddleware, allow_origins=settings.cors_origins, allow_methods=["*"], allow_headers=["*"])
+    # The API only exposes GET and POST routes and the console only sends JSON,
+    # so keep the CORS allow-list that narrow instead of "*".
+    app.add_middleware(CORSMiddleware, allow_origins=settings.cors_origins, allow_methods=["GET", "POST"],
+                       allow_headers=["Content-Type"])
 
     @app.exception_handler(ApiError)
     async def _api_error(_: Request, exc: ApiError):
