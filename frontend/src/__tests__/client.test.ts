@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { api, normalizeBase } from '../api/client'
+import { api, findingsQuery, normalizeBase } from '../api/client'
 import { evidence, findings, incidents } from '../api/mockData'
 
 describe('mock API contract', () => {
@@ -55,5 +55,13 @@ describe('live-backend helpers', () => {
     expect(normalizeBase('   ')).toBeUndefined()
     expect(normalizeBase('http://localhost:8000/')).toBe('http://localhost:8000')
     expect(normalizeBase(' http://h:1// ')).toBe('http://h:1')
+  })
+})
+
+describe('findingsQuery', () => {
+  it('drops unset and empty filters', () => {
+    expect(findingsQuery({})).toBe('')
+    expect(findingsQuery({ severity: undefined, status: '' })).toBe('')
+    expect(findingsQuery({ severity: 'HIGH', contributor_id: 'C 17' })).toBe('?severity=HIGH&contributor_id=C+17')
   })
 })

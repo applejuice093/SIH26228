@@ -28,13 +28,21 @@ export interface FindingFilters {
   severity?: string; status?: string; asset_id?: string; contributor_id?: string; assessment_id?: string
 }
 
+/** Query string for /findings without unset filters (URLSearchParams would send "severity=undefined"). */
+export function findingsQuery(f: FindingFilters): string {
+  const q = new URLSearchParams()
+  for (const [k, v] of Object.entries(f)) if (v) q.set(k, v)
+  const s = q.toString()
+  return s ? `?${s}` : ''
+}
+
 const auditLog = [...mock.auditEvents]
 
 export const api = {
   assets: (): Promise<Asset[]> => (BASE ? http('/assets') : delay(mock.assets)),
   assessments: (): Promise<Assessment[]> => (BASE ? http('/assessments') : delay(mock.assessments)),
   findings: (f: FindingFilters = {}): Promise<Finding[]> => {
-    if (BASE) return http('/findings?' + new URLSearchParams(f as Record<string, string>))
+    if (BASE) return http('/findings' + findingsQuery(f))
     return delay(mock.findings.filter((x) =>
       (!f.severity || x.severity === f.severity) && (!f.status || x.status === f.status) &&
       (!f.asset_id || x.affected_asset_ids.includes(f.asset_id)) &&
