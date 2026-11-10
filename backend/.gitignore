@@ -1,1 +1,4 @@
 var/
+# Model weights live in ~/.cache/cvtrust/weights (scripts/fetch_weights.py); never commit them
+*.pth
+*.pt
