@@ -155,3 +155,15 @@ Never treat ordinary application logs as the authoritative audit trail.
 - [ ] audit verifier.
 - [ ] report endpoint.
 - [ ] API integration tests.
+
+## 11. Implementation notes (current `backend/`)
+
+Behaviour worth knowing when operating or extending the implemented API:
+
+- **Validation errors** always return `422` with `{"error": {"code": "VALIDATION_ERROR", "details": [...]}}`; details are JSON-encoded, so custom validators cannot turn them into a `500`.
+- **CORS** allows only `GET` and `POST` with a `Content-Type` header, from the origins in `CVTRUST_CORS_ORIGINS`.
+- **Corner-patch detector** skips images whose shorter side is 13 px or less (too small for the smallest 12 px window) and lists them in `baseline.batch.images_too_small` instead of failing the assessment.
+- **Label-flip detector** ignores malformed zero/negative-size boxes when computing per-image box scale; batches with `<= k` assessable boxes return no evidence and report `k`.
+- **Thresholds**: a detector missing from `config/thresholds.json` fails with a message naming it.
+- **Weights**: `scripts/fetch_weights.py` downloads via a `.part` file (60 s socket timeout) and verifies the SHA-256; `*.pth` / `*.pt` are git-ignored.
+- **Tests**: `cd backend && pytest` (label-flip and embedding-confirmation tests skip when the ResNet-18 weights are not present locally).
