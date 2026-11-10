@@ -11,7 +11,8 @@ def _iou(a: dict, b: dict) -> float:
     bx0, by0, bx1, by1 = b["x"], b["y"], b["x"] + b["side"], b["y"] + b["side"]
     iw, ih = max(0, min(ax1, bx1) - max(ax0, bx0)), max(0, min(ay1, by1) - max(ay0, by0))
     inter = iw * ih
-    return inter / (a["side"] ** 2 + b["side"] ** 2 - inter)
+    union = a["side"] ** 2 + b["side"] ** 2 - inter
+    return inter / union if union > 0 else 0.0  # zero-side windows: no overlap, not ZeroDivisionError
 
 
 def score_patch(gt: dict, evidence: list) -> dict:
